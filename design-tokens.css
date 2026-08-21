@@ -1,0 +1,164 @@
+/*
+  Design read: developer portfolio for recruiters/hiring managers,
+  minimal-zen language (Apple Keynote / MUJI), single locked light theme.
+  Dials: VARIANCE 3, MOTION 3, DENSITY 2 — calm, centered, airy.
+
+  Next.js 사용 시 app/globals.css 에 그대로 옮겨서 쓰면 됩니다.
+*/
+
+:root {
+  /* ---- Color (무채색 3색 고정) ---- */
+  --color-bg: #ffffff;
+  --color-text: #000000;
+  --color-muted: #9ca3af;
+  --color-hairline: rgb(156 163 175 / 35%); /* accent의 저채도 변형, 4번째 색 추가 안 함 */
+
+  /* ---- Spacing scale (여백 60%+ 확보용, 8px 기준 확장) ---- */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4rem;
+  --space-7: 6rem;
+  --space-8: 8rem;
+  --space-9: 12rem;
+
+  /* ---- Typography ---- */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.5rem;
+  --text-3xl: 3.5rem;
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.6;
+  --tracking-wide: 0.08em;
+
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+
+  /* ---- Motion (절제된 페이드만 사용) ---- */
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 200ms;
+  --duration-base: 400ms;
+
+  /* ---- Layout ---- */
+  --content-width: 720px; /* 본문 읽기 폭 */
+  --page-width: 1120px;
+  --radius: 0; /* 텍스처 없음 → 각진 모서리로 통일 */
+}
+
+/* ---- Reset ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { color-scheme: light; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg { display: block; max-width: 100%; }
+
+/* ---- Typography scale ---- */
+h1, h2, h3 {
+  font-weight: var(--weight-light);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+
+p { max-width: 65ch; color: var(--color-text); }
+
+.text-muted { color: var(--color-muted); }
+
+/* ---- Layout primitives ---- */
+.page-shell {
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+.section {
+  padding-block: var(--space-8); /* 섹션 간 여백을 크게 잡아 60%+ 룰 반영 */
+}
+
+/* 제목 정중앙 + 위아래 얇은 구분선 */
+.section-title {
+  text-align: center;
+  max-width: var(--content-width);
+  margin-inline: auto;
+}
+
+.section-title::before,
+.section-title::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 1px;
+  margin-inline: auto;
+  background: var(--color-hairline);
+}
+
+.section-title::before { margin-bottom: var(--space-3); }
+.section-title::after { margin-top: var(--space-3); }
+
+/* ---- Ghost button (채워진 박스 없음, 밑줄만) ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-text);
+  padding-bottom: 2px;
+  transition: color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.btn:hover, .btn:focus-visible {
+  color: var(--color-muted);
+  border-color: var(--color-muted);
+}
+
+/* ---- Scroll reveal (절제된 등장 애니메이션, JS에서 is-visible 토글) ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--duration-base) var(--ease-standard),
+              transform var(--duration-base) var(--ease-standard);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .section { padding-block: var(--space-6); }
+  h1 { font-size: var(--text-2xl); }
+  h2 { font-size: var(--text-xl); }
+}
