@@ -1,0 +1,127 @@
+<svg viewBox="0 0 1400 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" font-family="'JetBrains Mono', ui-monospace, monospace">
+  <title id="title">Searchive 태그 · 검색 · RAG 파이프라인</title>
+  <desc id="desc">문서 색인부터 RAG 응답까지 6단계 흐름. 태그 후보 추출은 문서 수에 따라 KeyBERT/ES Significant Text로 분기하고, TagService는 이름 일치·벡터 유사도·신규 생성 3갈래로 분기해 검색 최적화 단계에서 다시 합류한다. 점선 테두리는 LLM 호출, 실선 테두리는 알고리즘 처리를 뜻한다.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#000000"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="700" fill="#ffffff"/>
+
+  <text x="700" y="26" text-anchor="middle" font-size="13" letter-spacing="0.03em" fill="#000000">Searchive — 태그 · 검색 · RAG 파이프라인 <tspan fill="#9ca3af">· LLM ↔ 알고리즘 경계</tspan></text>
+
+  <!-- Row 1 arrows -->
+  <line x1="340" y1="155" x2="370" y2="155" stroke="#000000" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="670" y1="155" x2="700" y2="155" stroke="#000000" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="1000" y1="155" x2="1030" y2="155" stroke="#000000" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- N1 문서 처리 & 색인 -->
+  <g>
+    <text x="54" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#000000">STEP 1</text>
+    <rect x="40" y="70" width="300" height="170" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+    <text x="54" y="98" font-size="14" font-weight="700" fill="#000000">문서 처리 &amp; 색인</text>
+    <text x="54" y="122" font-size="10" fill="#9ca3af">PDF 업로드 → 텍스트 추출</text>
+    <text x="54" y="138" font-size="10" fill="#9ca3af">ES 색인 (Nori 형태소 분석)</text>
+    <text x="54" y="220" font-size="9" fill="#9ca3af">MinIO · Elasticsearch</text>
+  </g>
+
+  <!-- N2 태그 후보 추출 -->
+  <g>
+    <text x="384" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#000000">STEP 2</text>
+    <rect x="370" y="70" width="300" height="170" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+    <text x="384" y="98" font-size="14" font-weight="700" fill="#000000">태그 후보 추출</text>
+    <text x="384" y="122" font-size="10" fill="#374151">목표 3배 or 최소 10개 과추출</text>
+    <text x="384" y="142" font-size="10" fill="#9ca3af">문서&lt;10 → KeyBERT</text>
+    <text x="384" y="158" font-size="10" fill="#9ca3af">문서≥10 → ES Significant Text</text>
+    <text x="384" y="220" font-size="9" fill="#9ca3af">알고리즘 · Cold Start 분기</text>
+  </g>
+
+  <!-- N3 태그 품질 필터 -->
+  <g>
+    <text x="714" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#000000">STEP 3</text>
+    <rect x="700" y="70" width="300" height="170" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+    <text x="714" y="98" font-size="14" font-weight="700" fill="#000000">태그 품질 필터</text>
+    <text x="714" y="122" font-size="10" fill="#9ca3af">불용어·숫자·길이&lt;2·조사 제거</text>
+    <text x="714" y="142" font-size="10" fill="#9ca3af">정규화·중복 제거 → 상위 3개</text>
+    <text x="714" y="220" font-size="9" fill="#9ca3af">알고리즘 · 2단계 필터</text>
+  </g>
+
+  <!-- N4 TagService -->
+  <g>
+    <text x="1044" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#000000">STEP 4</text>
+    <rect x="1030" y="70" width="300" height="170" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+    <text x="1044" y="98" font-size="14" font-weight="700" fill="#000000">TagService</text>
+    <text x="1044" y="122" font-size="10" fill="#9ca3af">대표 태그 결정</text>
+    <text x="1044" y="220" font-size="9" fill="#374151">3갈래 분기 ↓</text>
+  </g>
+
+  <!-- Branch: N4 → 3-way -->
+  <path d="M1180,240 L1180,260 L255,260 L255,280" fill="none" stroke="#000000" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="710" y1="260" x2="710" y2="280" stroke="#000000" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="1165" y1="260" x2="1165" y2="280" stroke="#000000" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- B1 이름 완전 일치 -->
+  <g>
+    <text x="54" y="272" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#000000">STEP 4-1</text>
+    <rect x="40" y="280" width="430" height="120" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+    <text x="54" y="308" font-size="13" font-weight="700" fill="#000000">이름 완전 일치</text>
+    <text x="54" y="332" font-size="10" fill="#374151">→ 기존 태그 재사용</text>
+    <text x="54" y="380" font-size="9" fill="#9ca3af">우선순위 1</text>
+  </g>
+
+  <!-- B2 벡터 유사도 -->
+  <g>
+    <text x="509" y="272" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#000000">STEP 4-2</text>
+    <rect x="495" y="280" width="430" height="120" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+    <text x="509" y="308" font-size="13" font-weight="700" fill="#000000">벡터 유사도 ≥ 0.8</text>
+    <text x="509" y="332" font-size="10" fill="#374151">→ 기존 대표 태그 재사용</text>
+    <text x="509" y="380" font-size="9" fill="#9ca3af">우선순위 2 · 표기 달라도 흡수</text>
+  </g>
+
+  <!-- B3 신규 생성 -->
+  <g>
+    <text x="964" y="272" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#000000">STEP 4-3</text>
+    <rect x="950" y="280" width="430" height="120" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+    <text x="964" y="308" font-size="13" font-weight="700" fill="#000000">둘 다 없음</text>
+    <text x="964" y="332" font-size="10" fill="#374151">→ 새 태그 생성</text>
+    <text x="964" y="380" font-size="9" fill="#9ca3af">태그 풀에 새로 추가</text>
+  </g>
+
+  <!-- Merge: 3-way → STEP 5 -->
+  <line x1="255" y1="400" x2="255" y2="430" stroke="#000000" stroke-width="1"/>
+  <line x1="710" y1="400" x2="710" y2="430" stroke="#000000" stroke-width="1"/>
+  <line x1="1165" y1="400" x2="1165" y2="430" stroke="#000000" stroke-width="1"/>
+  <line x1="255" y1="430" x2="1165" y2="430" stroke="#000000" stroke-width="1"/>
+  <line x1="255" y1="430" x2="255" y2="460" stroke="#000000" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Row 2 arrow -->
+  <line x1="470" y1="535" x2="495" y2="535" stroke="#000000" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- N5 검색 최적화 (_msearch) -->
+  <g>
+    <text x="54" y="452" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#000000">STEP 5</text>
+    <rect x="40" y="460" width="430" height="150" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+    <text x="54" y="490" font-size="14" font-weight="700" fill="#000000">검색 최적화 (_msearch)</text>
+    <text x="54" y="514" font-size="10" fill="#374151">1 요청 = N 키워드</text>
+    <text x="54" y="530" font-size="10" fill="#9ca3af">5회→1회 · 250ms→10ms (키워드 5개 기준)</text>
+    <text x="54" y="596" font-size="9" fill="#9ca3af">알고리즘 · Elasticsearch KNN batch</text>
+  </g>
+
+  <!-- N6 RAG 질의응답 : LLM -->
+  <g>
+    <text x="509" y="452" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#000000">STEP 6</text>
+    <rect x="495" y="460" width="430" height="150" fill="#ffffff" stroke="#000000" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="509" y="490" font-size="14" font-weight="700" fill="#000000">RAG 질의응답</text>
+    <text x="509" y="514" font-size="10" fill="#9ca3af">검색 결과 기반 답변 생성</text>
+    <text x="509" y="596" font-size="9" fill="#9ca3af">LLM</text>
+  </g>
+
+  <!-- Legend -->
+  <rect x="480" y="650" width="40" height="20" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <text x="528" y="664" font-size="11" fill="#000000">알고리즘 · 결정론적</text>
+
+  <rect x="760" y="650" width="40" height="20" fill="#ffffff" stroke="#000000" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="808" y="664" font-size="11" fill="#000000">LLM 호출</text>
+</svg>
