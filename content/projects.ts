@@ -188,8 +188,8 @@ export const projects: Project[] = [
       },
     ],
     cardImage: {
-      src: "/images/projects/masil/screen-chat-itinerary-thumb.png",
-      caption: "AI 일정·예약 후보 제안",
+      src: "/images/projects/masil/card-hero.png",
+      caption: "AI 채팅부터 예약·일정 관리까지",
     },
     screens: [
       {
