@@ -51,110 +51,120 @@
   --radius: 0;
 }
 
-/* ---- Reset ---- */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/*
+ * @layer base로 감싸는 이유: Tailwind v4는 @import "tailwindcss"가 만든
+ * theme/base/components/utilities 레이어 순서를 쓴다. 이 블록을 레이어 밖
+ * 일반 CSS로 두면 "unlayered" 취급되어 캐스케이드 우선순위가 utilities
+ * 레이어보다 항상 높아지고, margin:0 리셋이 margin 계열 유틸리티(mt-,
+ * space-y- 등)를 전부 덮어써버린다. base 레이어에 두면 utilities가
+ * 정상적으로 이긴다.
+ */
+@layer base {
+  /* ---- Reset ---- */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { color-scheme: light; }
+  html { color-scheme: light; }
 
-body {
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-sans);
-  font-weight: var(--weight-regular);
-  line-height: var(--leading-normal);
-  -webkit-font-smoothing: antialiased;
-}
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-normal);
+    -webkit-font-smoothing: antialiased;
+  }
 
-img, svg { display: block; max-width: 100%; }
+  img, svg { display: block; max-width: 100%; }
 
-/* ---- Typography scale ---- */
-h1, h2, h3 {
-  font-weight: var(--weight-light);
-  line-height: var(--leading-tight);
-  letter-spacing: -0.01em;
-}
+  /* ---- Typography scale ---- */
+  h1, h2, h3 {
+    font-weight: var(--weight-light);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.01em;
+  }
 
-h1 { font-size: var(--text-3xl); }
-h2 { font-size: var(--text-2xl); }
-h3 { font-size: var(--text-xl); }
+  h1 { font-size: var(--text-3xl); }
+  h2 { font-size: var(--text-2xl); }
+  h3 { font-size: var(--text-xl); }
 
-p { max-width: 65ch; color: var(--color-text); }
+  p { max-width: 65ch; color: var(--color-text); }
 
-.text-muted { color: var(--color-muted); }
+  .text-muted { color: var(--color-muted); }
 
-/* ---- Layout primitives ---- */
-.page-shell {
-  max-width: var(--page-width);
-  margin-inline: auto;
-  padding-inline: var(--space-4);
-}
+  /* ---- Layout primitives ---- */
+  .page-shell {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding-inline: var(--space-4);
+  }
 
-.section {
-  padding-block: var(--space-8);
-}
+  .section {
+    padding-block: var(--space-8);
+  }
 
-.section-title {
-  text-align: center;
-  max-width: var(--content-width);
-  margin-inline: auto;
-}
+  .section-title {
+    text-align: center;
+    max-width: var(--content-width);
+    margin-inline: auto;
+  }
 
-.section-title::before,
-.section-title::after {
-  content: "";
-  display: block;
-  width: 40px;
-  height: 1px;
-  margin-inline: auto;
-  background: var(--color-hairline);
-}
+  .section-title::before,
+  .section-title::after {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 1px;
+    margin-inline: auto;
+    background: var(--color-hairline);
+  }
 
-.section-title::before { margin-bottom: var(--space-3); }
-.section-title::after { margin-top: var(--space-3); }
+  .section-title::before { margin-bottom: var(--space-3); }
+  .section-title::after { margin-top: var(--space-3); }
 
-/* ---- Ghost button ---- */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--color-text);
-  border-bottom: 1px solid var(--color-text);
-  padding-bottom: 2px;
-  transition: color var(--duration-fast) var(--ease-standard),
-              border-color var(--duration-fast) var(--ease-standard);
-}
+  /* ---- Ghost button ---- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-text);
+    padding-bottom: 2px;
+    transition: color var(--duration-fast) var(--ease-standard),
+                border-color var(--duration-fast) var(--ease-standard);
+  }
 
-.btn:hover, .btn:focus-visible {
-  color: var(--color-muted);
-  border-color: var(--color-muted);
-}
+  .btn:hover, .btn:focus-visible {
+    color: var(--color-muted);
+    border-color: var(--color-muted);
+  }
 
-/* ---- Scroll reveal ---- */
-.reveal {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity var(--duration-base) var(--ease-standard),
-              transform var(--duration-base) var(--ease-standard);
-}
-
-.reveal.is-visible {
-  opacity: 1;
-  transform: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
+  /* ---- Scroll reveal ---- */
   .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity var(--duration-base) var(--ease-standard),
+                transform var(--duration-base) var(--ease-standard);
+  }
+
+  .reveal.is-visible {
     opacity: 1;
     transform: none;
-    transition: none;
   }
-}
 
-@media (max-width: 768px) {
-  .section { padding-block: var(--space-6); }
-  h1 { font-size: var(--text-2xl); }
-  h2 { font-size: var(--text-xl); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .section { padding-block: var(--space-6); }
+    h1 { font-size: var(--text-2xl); }
+    h2 { font-size: var(--text-xl); }
+  }
 }
