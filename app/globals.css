@@ -1,11 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
 @theme {
-  /* ---- Color (무채색 3색 고정) ---- */
-  --color-bg: #ffffff;
-  --color-text: #000000;
-  --color-muted: #9ca3af;
-  --color-hairline: rgb(156 163 175 / 35%);
+  /* ---- Color (토스 스타일) ---- */
+  --color-bg: #f2f4f6;
+  --color-card: #ffffff;
+  --color-text: #191f28;
+  --color-sub: #8b95a1;
+  --color-muted: #b0b8c1;
+  --color-border: #e5e8eb;
+
+  --color-blue: #3182f6;
+  --color-blue-bg: #ebf3fe;
+  --color-green: #0dc07b;
+  --color-green-bg: #e8faf4;
+  --color-purple: #7b61ff;
+  --color-purple-bg: #f0eeff;
+  --color-orange: #ff6b35;
+  --color-orange-bg: #fff0eb;
+  --color-gray: #6b7685;
+  --color-gray-bg: #f2f4f6;
 
   /* ---- Typography scale ---- */
   --text-xs: 0.75rem;
@@ -18,7 +33,13 @@
 
   /* ---- Motion / shape ---- */
   --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
-  --radius-none: 0px;
+  --radius-card: 20px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 2px 12px rgb(0 0 0 / 6%);
+  --shadow-card-hover: 0 8px 32px rgb(49 130 246 / 14%);
 }
 
 :root {
@@ -33,22 +54,22 @@
   --space-8: 8rem;
   --space-9: 12rem;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --leading-tight: 1.15;
   --leading-normal: 1.6;
   --tracking-wide: 0.08em;
 
-  --weight-light: 300;
   --weight-regular: 400;
   --weight-medium: 500;
+  --weight-bold: 700;
 
   --duration-fast: 200ms;
   --duration-base: 400ms;
 
   --content-width: 720px;
-  --page-width: 1120px;
-  --radius: 0;
+  --page-width: 1400px;
 }
 
 /*
@@ -63,7 +84,7 @@
   /* ---- Reset ---- */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { color-scheme: light; }
+  html { color-scheme: light; scroll-behavior: smooth; }
 
   body {
     background: var(--color-bg);
@@ -76,9 +97,11 @@
 
   img, svg { display: block; max-width: 100%; }
 
+  ::selection { background: var(--color-blue); color: #fff; }
+
   /* ---- Typography scale ---- */
   h1, h2, h3 {
-    font-weight: var(--weight-light);
+    font-weight: var(--weight-bold);
     line-height: var(--leading-tight);
     letter-spacing: -0.01em;
   }
@@ -89,6 +112,7 @@
 
   p { max-width: 65ch; color: var(--color-text); }
 
+  .text-sub { color: var(--color-sub); }
   .text-muted { color: var(--color-muted); }
 
   /* ---- Layout primitives ---- */
@@ -102,43 +126,28 @@
     padding-block: var(--space-8);
   }
 
-  .section-title {
-    text-align: center;
-    max-width: var(--content-width);
-    margin-inline: auto;
+  /* ---- Card ---- */
+  .card {
+    background: var(--color-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
   }
 
-  .section-title::before,
-  .section-title::after {
-    content: "";
-    display: block;
-    width: 40px;
-    height: 1px;
-    margin-inline: auto;
-    background: var(--color-hairline);
-  }
-
-  .section-title::before { margin-bottom: var(--space-3); }
-  .section-title::after { margin-top: var(--space-3); }
-
-  /* ---- Ghost button ---- */
+  /* ---- Ghost link ---- */
   .btn {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
     font-size: var(--text-sm);
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
-    color: var(--color-text);
-    border-bottom: 1px solid var(--color-text);
-    padding-bottom: 2px;
-    transition: color var(--duration-fast) var(--ease-standard),
-                border-color var(--duration-fast) var(--ease-standard);
+    font-weight: var(--weight-medium);
+    color: var(--color-blue);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity var(--duration-fast) var(--ease-standard);
   }
 
   .btn:hover, .btn:focus-visible {
-    color: var(--color-muted);
-    border-color: var(--color-muted);
+    opacity: 0.6;
   }
 
   /* ---- Scroll reveal ---- */
