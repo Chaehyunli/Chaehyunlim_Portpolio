@@ -55,11 +55,11 @@ export const projects: Project[] = [
       },
     ],
     introScreen: {
-      src: "/images/projects/modu-yaksok/screen-landing.png",
+      src: "/images/projects/modu-yaksok/mockup-landing-page.png",
       caption: "실제 배포된 랜딩 페이지 — 낙서하듯 적으면 일정이 나온다",
     },
     heroScreen: {
-      src: "/images/projects/modu-yaksok/screen-schedule-candidates.png",
+      src: "/images/projects/modu-yaksok/mockup-schedule-candidates.png",
       caption: "일정 후보 3개 제시",
     },
     decisions: [
@@ -82,7 +82,7 @@ export const projects: Project[] = [
           },
         ],
         image: {
-          src: "/images/projects/modu-yaksok/screen-api-key-passphrase.png",
+          src: "/images/projects/modu-yaksok/mockup-api-key-passphrase.png",
           caption: "패스프레이즈 입력 — 서버에는 저장되지 않는다",
         },
       },
@@ -127,11 +127,11 @@ export const projects: Project[] = [
     ],
     screens: [
       {
-        src: "/images/projects/modu-yaksok/screen-preference-conflict.png",
+        src: "/images/projects/modu-yaksok/mockup-preference-conflict.png",
         caption: "조건 입력 — 선호 충돌은 미리 짚어준다",
       },
       {
-        src: "/images/projects/modu-yaksok/screen-route-map.png",
+        src: "/images/projects/modu-yaksok/mockup-route-map.png",
         caption: "지도·경로 상세 — 실제 이동 경로로 동선을 검증한다",
       },
     ],
