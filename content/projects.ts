@@ -280,11 +280,15 @@ export const projects: Project[] = [
     ],
     screens: [
       {
+        src: "/images/projects/searchive/mockup-landing.png",
+        caption: "랜딩 페이지 — 업로드·정리·질의응답을 한 흐름으로 안내",
+      },
+      {
         src: "/images/projects/searchive/screen-tagging-result.png",
         caption: "문서 업로드·자동 태깅 결과",
       },
       {
-        src: "/images/projects/searchive/screen-rag-qna.png",
+        src: "/images/projects/searchive/mockup-rag-qna.png",
         caption: "RAG 질의응답",
       },
     ],
