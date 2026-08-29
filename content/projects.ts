@@ -86,7 +86,7 @@ export const projects: Project[] = [
           {
             label: "Argon2 대신 crypto.subtle PBKDF2",
             detail:
-              "Argon2가 무차별 대입엔 더 강하지만 WASM 의존성이 붙는다. 브라우저 내장 API만으로 끝나는 PBKDF2를 택해 프론트 의존성을 0으로 유지했다.",
+              "반복 600,000회는 OWASP Password Storage Cheat Sheet(2023) 권장치를 그대로 채택했다. Argon2가 더 강하지만 WASM 의존성이 붙어, 브라우저 내장 crypto.subtle만으로 끝나는 PBKDF2를 택하고 kdf_iterations를 암호문과 함께 저장해 이후 상향도 가능하게 했다.",
           },
           {
             label: "평문은 호출 순간에만, 즉시 폐기",
@@ -95,7 +95,7 @@ export const projects: Project[] = [
           },
         ],
         outcome:
-          "서버가 어떤 시점에도 사용자 키 평문에 접근하지 못하는 구조로 전환했다. 패스프레이즈를 분실하면 저장된 키도 복구 불가능한데, 이는 서버 신뢰를 설계에서 배제하기 위한 의도된 트레이드오프다.",
+          "Fernet 대칭키 저장에서, 서버가 어떤 시점에도 사용자 키 평문에 접근할 수 없는 구조로 전환했다. 패스프레이즈 분실 시 복구 불가는 서버 신뢰를 설계에서 배제하기 위한 의도된 트레이드오프다.",
         image: {
           src: "/images/projects/modu-yaksok/mockup-api-key-passphrase.png",
           caption: "패스프레이즈 입력 — 서버에는 저장되지 않는다",
@@ -123,16 +123,16 @@ export const projects: Project[] = [
           {
             label: "후보 생성 알고리즘 버전을 따로 구현",
             detail:
-              "beam search로 하드 조건을 생성 도중에 보장하면서 세 일정의 다양성을 함께 최적화하도록, LLM 생성과 별개 경로를 만들었다.",
+              "순차 생성하면 지역 최적점에 갇혀, beam width 80으로 완성 조합을 계획당 12개씩 만든 뒤 세 후보를 한 세트로 공동 평가한다(장소·카테고리 Jaccard, 태그 충족).",
           },
           {
             label: "경계를 옮길 때마다 수치로 검증",
             detail:
-              "Step별 DeepEval 골든 데이터셋 회귀 테스트를 붙여, 프롬프트나 모델을 바꾸면 같은 세트로 다시 돌려 품질 저하를 숫자로 확인한다.",
+              "LLM이 남은 Step1·Step3는 골든셋 11·4케이스(GEval 임계값 0.70, judge 고정)로, 코드가 맡은 하드조건은 결정론적 회귀 fixture로 본다. 프롬프트·모델을 바꾸면 같은 세트로 다시 돌린다.",
           },
         ],
         outcome:
-          "식사 누락·원거리 혼합 같은 하드 조건 위반이 재현되지 않는다. 프롬프트나 모델을 바꿔도 같은 골든 세트로 회귀 검증해 품질 변화를 수치로 확인한다.",
+          "하드 조건은 완성 후 검사가 아니라 beam search가 후보를 넓히는 도중부터 불변조건으로 강제된다 — 결정론적 회귀 fixture(합성 데이터)에서 세 후보 모두 위반 0건이 재현된다. Step1·Step3 골든셋은 GEval 0.70 임계값을 통과한다.",
         image: {
           src: "/images/projects/modu-yaksok/mockup-preference-conflict.png",
           caption: "조건 입력 — 겹치는 선호는 생성 전에 짚어준다",
@@ -141,16 +141,21 @@ export const projects: Project[] = [
       {
         title: "외부 API 호출량을 제어하되 서비스는 멈추지 않게",
         problem:
-          "네이버 지역검색과 ODsay는 초당·일일 호출 한도가 있다. 장소 풀을 모으려면 카테고리 16종 × 태그만큼 팬아웃해야 해서, 한 번의 일정 생성이 수십 번의 호출로 번진다.",
+          "네이버 지역검색은 초당 10건·일 25,000건, ODsay는 일 1,000건 한도가 있다. 장소 풀을 모으려면 카테고리 16종 × 태그만큼 팬아웃해야 해서, 한 번의 일정 생성이 네이버를 21회 호출한다(경기 수원 조건 실측, 고유 장소 92곳).",
+        considerations: [
+          "재시도(backoff)만으로는 호출 폭주 자체를 못 막음 — 속도를 사전에 제한해야 함",
+          "순수 FIFO 토큰버킷은 한 생성 요청이 큐를 독점해 다른 사용자를 굶김",
+          "리미터를 in-memory로 두면 멀티 워커에서 각자 한도를 세 전역 상한이 깨짐",
+        ],
         image: {
           src: "/images/projects/modu-yaksok/mockup-route-map.png",
           caption: "지도·경로 상세 — 700m 이내 구간은 호출 없이 처리한다",
         },
         solution: [
           {
-            label: "초당·일일 한도를 나눠 관리",
+            label: "초당은 세션 단위 라운드로빈, 일일은 Redis",
             detail:
-              "초당 상한은 토큰버킷, 일일 한도는 Redis 카운터 + 자정 TTL로 처리해 여러 워커에서도 전역 집계가 어긋나지 않게 했다.",
+              "초당 상한은 세션 단위 라운드로빈 토큰버킷 — 세션 N개면 세션당 처리량이 자연히 rate/N로 수렴한다. 일일 한도는 Redis 카운터 + 자정 TTL로 여러 워커에서도 전역 집계가 하나로 유지된다.",
           },
           {
             label: "부족하면 막지 않고 줄인다",
@@ -162,10 +167,13 @@ export const projects: Project[] = [
             detail: "ODsay는 700m 이내 도보 구간을 사전에 걸러 호출 자체를 건너뛴다.",
           },
         ],
+        outcome:
+          "하이브리드 전환으로 생성 1건당 네이버 검색이 36회에서 21회로 줄었고, 라운드로빈 덕에 세션이 몰려도 서로 굶기지 않는다. 초당 리미터가 아직 in-process라 멀티 워커 스케일 시 전역 상한이 어긋나는 건 다음 과제로 남겼다.",
       },
     ],
     screens: [],
-    result: "배포 운영 중 · https://moduyaksok.vercel.app",
+    result:
+      "공개 배포 · 본인·지인 사용 중(사용량 분석 미도입) · 초기 생성 지연 p50 16초 / p95 ~20초(로컬 5회) · https://moduyaksok.vercel.app",
   },
   {
     id: "masil",
