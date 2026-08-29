@@ -1,99 +1,90 @@
-<svg viewBox="0 0 1400 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" font-family="'JetBrains Mono', ui-monospace, monospace">
+<svg viewBox="0 0 1000 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" font-family="'JetBrains Mono', ui-monospace, monospace">
   <title id="title">모두약속 AI 일정 생성 파이프라인</title>
-  <desc id="desc">사용자 조건 입력부터 동선 보강까지 4단계 흐름. Step 3은 규칙 기반 하드 필터로 먼저 걸러낸 뒤 살아남은 후보만 LLM을 1회 호출하는 순서다. 점선 테두리는 LLM 호출, 실선 테두리는 알고리즘 처리를 뜻한다.</desc>
+  <desc id="desc">사용자 조건 입력부터 동선 보강까지 6단계 흐름. 윗줄 STEP 1 → 1.5 → 2, 아랫줄 STEP 3-① → 3-② → 4로 이어진다. Step 3은 규칙 기반 하드 필터로 먼저 걸러낸 뒤 살아남은 후보만 LLM을 1회 호출하는 순서다. 점선 테두리는 LLM 호출, 실선 테두리는 알고리즘 처리를 뜻한다.</desc>
 
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#191F28"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#B0B8C1"/>
     </marker>
   </defs>
 
-  <rect x="0" y="0" width="1400" height="340" fill="#F2F4F6"/>
+  <rect x="0" y="0" width="1000" height="430" fill="#FFFFFF"/>
+  <text x="20" y="24" font-size="12.5" font-weight="700" fill="#191F28">AI 일정 생성 파이프라인 <tspan fill="#8B95A1" font-weight="400">· LLM ↔ 알고리즘 경계</tspan></text>
 
-  <text x="700" y="26" text-anchor="middle" font-size="13" letter-spacing="0.03em" fill="#191F28">모두약속 — AI 일정 생성 파이프라인 <tspan fill="#8B95A1">· LLM ↔ 알고리즘 경계</tspan></text>
+  <!-- Legend (top-right) -->
+  <rect rx="4" x="678" y="12" width="24" height="14" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="708" y="24" font-size="10" fill="#191F28">LLM 호출</text>
+  <rect rx="4" x="800" y="12" width="24" height="14" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
+  <text x="830" y="24" font-size="10" fill="#191F28">알고리즘 · 결정론적</text>
 
-  <!-- Arrows -->
-  <line x1="245" y1="155" x2="265" y2="155" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <line x1="470" y1="155" x2="490" y2="155" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <line x1="695" y1="155" x2="715" y2="155" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <line x1="920" y1="155" x2="940" y2="155" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <line x1="1145" y1="155" x2="1165" y2="155" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-
-  <!-- C1 STEP1 조건 정규화 : LLM -->
+  <!-- ===== Row 1 ===== -->
+  <!-- STEP 1 : LLM -->
   <g>
-    <text x="54" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 1</text>
-    <rect rx="8" x="40" y="70" width="205" height="170" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
-    <text x="54" y="96" font-size="13" font-weight="700" fill="#191F28">조건 정규화</text>
-    <text x="54" y="118" font-size="9" fill="#191F28">입력: 목적·인원·시간</text>
-    <text x="54" y="132" font-size="9" fill="#191F28">지역·예산·선호/비선호</text>
-    <text x="54" y="152" font-size="9" fill="#8B95A1">자유 텍스트 → 태그 +</text>
-    <text x="54" y="166" font-size="9" fill="#8B95A1">소프트 취향</text>
-    <text x="54" y="220" font-size="9" fill="#8B95A1">LLM</text>
+    <rect rx="8" x="20" y="40" width="300" height="132" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="36" y="64" font-size="10" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 1</text>
+    <text x="304" y="64" font-size="10" font-weight="700" text-anchor="end" fill="#3182F6">LLM</text>
+    <text x="36" y="92" font-size="15" font-weight="700" fill="#191F28">조건 정규화</text>
+    <text x="36" y="118" font-size="10.5" fill="#8B95A1">입력: 목적·인원·시간·지역·예산·선호</text>
+    <text x="36" y="138" font-size="10.5" fill="#8B95A1">자유 텍스트 → 검증 가능한 태그 + 취향</text>
+  </g>
+  <line x1="322" y1="106" x2="338" y2="106" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- STEP 1.5 : 외부 API -->
+  <g>
+    <rect rx="8" x="340" y="40" width="300" height="132" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
+    <text x="356" y="64" font-size="10" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 1.5</text>
+    <text x="624" y="64" font-size="10" font-weight="700" text-anchor="end" fill="#8B95A1">외부 API</text>
+    <text x="356" y="92" font-size="15" font-weight="700" fill="#191F28">네이버 지역검색</text>
+    <text x="356" y="118" font-size="10.5" fill="#8B95A1">카테고리 16종 × 태그만큼 팬아웃</text>
+    <text x="356" y="138" font-size="10.5" fill="#8B95A1">실재하는 장소만으로 후보 풀 구성</text>
+  </g>
+  <line x1="642" y1="106" x2="658" y2="106" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- STEP 2 : LLM + 알고리즘 -->
+  <g>
+    <rect rx="8" x="660" y="40" width="300" height="132" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="676" y="64" font-size="10" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 2</text>
+    <text x="944" y="64" font-size="10" font-weight="700" text-anchor="end" fill="#3182F6">LLM + 알고리즘</text>
+    <text x="676" y="92" font-size="15" font-weight="700" fill="#191F28">후보 생성 · 3관점 병렬</text>
+    <text x="676" y="118" font-size="10.5" fill="#8B95A1">가성비 / 동선최소 / 취향반영</text>
+    <text x="676" y="138" font-size="10.5" fill="#8B95A1">검색 풀 안에서만 선택 → 환각 차단</text>
   </g>
 
-  <!-- C2 STEP1.5 네이버 지역검색 : Algorithm -->
+  <!-- Wrap connector: STEP 2 → STEP 3-① -->
+  <path d="M960,106 L980,106 L980,211 L20,211 L20,244" fill="none" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- ===== Row 2 ===== -->
+  <!-- STEP 3-① : 알고리즘 -->
   <g>
-    <text x="279" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 1.5</text>
-    <rect rx="8" x="265" y="70" width="205" height="170" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
-    <text x="279" y="96" font-size="13" font-weight="700" fill="#191F28">네이버 지역검색</text>
-    <text x="279" y="118" font-size="9" fill="#8B95A1">실재 장소 풀 확보</text>
-    <text x="279" y="138" font-size="9" fill="#8B95A1">카테고리 16종</text>
-    <text x="279" y="152" font-size="9" fill="#8B95A1">× 태그 팬아웃</text>
-    <text x="279" y="220" font-size="9" fill="#8B95A1">외부 API</text>
+    <rect rx="8" x="20" y="250" width="300" height="132" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
+    <text x="36" y="274" font-size="10" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 3-①</text>
+    <text x="304" y="274" font-size="10" font-weight="700" text-anchor="end" fill="#8B95A1">알고리즘 · 결정론적</text>
+    <text x="36" y="302" font-size="15" font-weight="700" fill="#191F28">규칙 기반 하드 필터</text>
+    <text x="36" y="328" font-size="10.5" fill="#8B95A1">시간겹침·예산초과·이동거리·태그중복</text>
+    <text x="36" y="348" font-size="10.5" fill="#8B95A1">좌표와 시각만으로 코드가 확정 판단</text>
+  </g>
+  <line x1="322" y1="316" x2="338" y2="316" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- STEP 3-② : LLM -->
+  <g>
+    <rect rx="8" x="340" y="250" width="300" height="132" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="356" y="274" font-size="10" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 3-②</text>
+    <text x="624" y="274" font-size="10" font-weight="700" text-anchor="end" fill="#3182F6">LLM</text>
+    <text x="356" y="302" font-size="15" font-weight="700" fill="#191F28">LLM 1회 호출</text>
+    <text x="356" y="328" font-size="10.5" fill="#8B95A1">규칙을 통과한 후보만 대상으로</text>
+    <text x="356" y="348" font-size="10.5" fill="#8B95A1">의미적 태그 위반 판단 + 추천 이유</text>
+  </g>
+  <line x1="642" y1="316" x2="658" y2="316" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- STEP 4 : 알고리즘 -->
+  <g>
+    <rect rx="8" x="660" y="250" width="300" height="132" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
+    <text x="676" y="274" font-size="10" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 4</text>
+    <text x="944" y="274" font-size="10" font-weight="700" text-anchor="end" fill="#8B95A1">알고리즘 · LLM 없음</text>
+    <text x="676" y="302" font-size="15" font-weight="700" fill="#191F28">동선 보강</text>
+    <text x="676" y="328" font-size="10.5" fill="#8B95A1">선택된 후보에만 ODsay·NCP 호출</text>
+    <text x="676" y="348" font-size="10.5" fill="#8B95A1">도보·대중교통·자차 경로 + 시간 보정</text>
   </g>
 
-  <!-- C3 STEP2 후보 생성 : LLM + Algorithm -->
-  <g>
-    <text x="504" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 2</text>
-    <rect rx="8" x="490" y="70" width="205" height="170" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
-    <text x="504" y="96" font-size="13" font-weight="700" fill="#191F28">후보 생성</text>
-    <text x="504" y="118" font-size="9" fill="#8B95A1">가성비·동선최소</text>
-    <text x="504" y="132" font-size="9" fill="#8B95A1">취향반영 — 3관점 병렬</text>
-    <text x="504" y="154" font-size="9" fill="#191F28">검색 풀 안에서만 선택</text>
-    <text x="504" y="168" font-size="9" fill="#191F28">→ 환각 차단</text>
-    <text x="504" y="220" font-size="9" fill="#8B95A1">LLM + 알고리즘</text>
-  </g>
-
-  <!-- C4 STEP3-① 규칙 기반 하드 필터 : Algorithm -->
-  <g>
-    <text x="729" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 3-①</text>
-    <rect rx="8" x="715" y="70" width="205" height="170" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
-    <text x="729" y="96" font-size="13" font-weight="700" fill="#191F28">규칙 기반 하드 필터</text>
-    <text x="729" y="118" font-size="9" fill="#8B95A1">장소환각·시간겹침</text>
-    <text x="729" y="132" font-size="9" fill="#8B95A1">예산초과·이동거리15분</text>
-    <text x="729" y="146" font-size="9" fill="#8B95A1">식사슬롯·태그중복</text>
-    <text x="729" y="220" font-size="9" fill="#8B95A1">알고리즘 · 결정론적</text>
-  </g>
-
-  <!-- C5 STEP3-② LLM 1회 호출 : LLM -->
-  <g>
-    <text x="954" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 3-②</text>
-    <rect rx="8" x="940" y="70" width="205" height="170" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
-    <text x="954" y="96" font-size="13" font-weight="700" fill="#191F28">LLM 1회 호출</text>
-    <text x="954" y="118" font-size="9" fill="#8B95A1">살아남은 후보만 대상</text>
-    <text x="954" y="138" font-size="9" fill="#8B95A1">의미적 태그위반 판단</text>
-    <text x="954" y="152" font-size="9" fill="#8B95A1">추천 이유 생성</text>
-    <text x="954" y="220" font-size="9" fill="#8B95A1">LLM</text>
-  </g>
-
-  <!-- C6 STEP4 동선 보강 : Algorithm -->
-  <g>
-    <text x="1179" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4</text>
-    <rect rx="8" x="1165" y="70" width="205" height="170" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
-    <text x="1179" y="96" font-size="13" font-weight="700" fill="#191F28">동선 보강</text>
-    <text x="1179" y="118" font-size="9" fill="#191F28">선택된 후보에만</text>
-    <text x="1179" y="138" font-size="9" fill="#8B95A1">ODsay·NCP Maps 호출</text>
-    <text x="1179" y="152" font-size="9" fill="#8B95A1">경로 + 추정시간 보정</text>
-    <text x="1179" y="220" font-size="9" fill="#8B95A1">알고리즘 · LLM 없음</text>
-  </g>
-
-  <!-- Gate annotation between STEP3-② and STEP4 -->
-  <text x="1055" y="264" text-anchor="middle" font-size="9" fill="#8B95A1">[ 후보 3개 제시 → 사용자 선택 ]</text>
-
-  <!-- Legend -->
-  <rect rx="8" x="470" y="296" width="40" height="20" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
-  <text x="518" y="310" font-size="11" fill="#191F28">알고리즘 · 결정론적</text>
-
-  <rect rx="8" x="750" y="296" width="40" height="20" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
-  <text x="798" y="310" font-size="11" fill="#191F28">LLM 호출</text>
+  <text x="500" y="410" text-anchor="middle" font-size="10" fill="#8B95A1">STEP 3-② 이후 · 후보 3개를 제시하고, 사용자가 고른 1개에만 STEP 4를 실행해 외부 경로 API 호출을 아낀다</text>
 </svg>

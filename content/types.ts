@@ -20,8 +20,14 @@ export interface SolutionPoint {
 
 export interface ProjectDecision {
   title: string;
+  /** Situation & Task — 마주한 문제 상황 (서술형 문단) */
   problem: string;
+  /** 나의 고민 — 기각한 대안·판단 기준 (불릿). problem과 함께 S&T 단락을 이룬다. */
+  considerations?: string[];
+  /** Action — 판단과 행동 (굵은 키워드 — 짧은 결과 캡션형) */
   solution: SolutionPoint[];
+  /** Result — 행동으로 만든 결과 (서술형 문단) */
+  outcome?: string;
   image?: ProjectImage;
 }
 

@@ -64,77 +64,107 @@ export const projects: Project[] = [
     },
     decisions: [
       {
-        title: "내 서버가 사용자 키를 볼 수 있다는 것 자체가 문제였다",
+        title: "서버가 사용자 키를 복호화할 수 있다는 것 자체가 문제였다",
         problem:
-          "LLM 호출 비용을 운영자가 부담하지 않게 하려고 사용자가 직접 API 키를 등록하는 BYOK 구조를 선택했다. 처음엔 Fernet 대칭키로 암호화해 DB에 저장했는데, 마스터키를 가진 서버는 모든 사용자의 키를 복호화할 수 있어 DB 유출뿐 아니라 운영자가 직접 열람하는 것도 막을 수 없는 구조였다.",
+          "LLM 호출 비용을 운영자가 부담하지 않도록 사용자가 직접 API 키를 등록하는 BYOK 구조를 선택했고, 그 대가로 남의 비밀키를 서버에 안전하게 보관할 책임을 떠안았다. 처음엔 Fernet 대칭키로 암호화해 DB에 저장했는데, 마스터키를 가진 서버는 모든 사용자의 키를 복호화할 수 있어 DB 유출은 물론 운영자의 직접 열람도 구조적으로 막을 수 없었다.",
+        considerations: [
+          "클라이언트가 provider를 직접 호출 — CORS·provider별 SDK를 프론트에 이식하는 비용이 큼",
+          "요청마다 프론트가 키를 전달(무저장) — 저장은 안 해도 처리 중엔 서버가 평문을 봄",
+          "localStorage 저장 — 해결이 아니라 리스크 이전, XSS 하나로 전 사용자 키 유출",
+        ],
         solution: [
           {
-            label: "PBKDF2-SHA256 600,000회 반복 · AES-GCM 256bit 클라이언트 암호화",
-            detail: "서버에는 암호문·salt·iv만 전송",
+            label: "신뢰 경계부터 고정",
+            detail:
+              "\"서버는 평문 키를 절대 볼 수 없다\"를 깨지지 않는 제약으로 먼저 못박고, 보안·편의성·zero-knowledge 사이의 조합을 거기에 맞춰 선택했다.",
           },
           {
-            label: "provider 호출 시점에만 평문 사용",
-            detail: "DB·캐시 어디에도 평문 미저장",
+            label: "패스프레이즈로 유도한 키, 브라우저에서 암호화",
+            detail:
+              "PBKDF2-SHA256 60만 회로 키를 유도하고 AES-GCM 256bit으로 클라이언트에서 암호화해, 서버로는 암호문·salt·iv만 보낸다.",
           },
           {
-            label: "패스프레이즈 분실 시 복구 불가",
-            detail: "서버가 대신 복호화할 방법 없음 — 의도된 트레이드오프",
+            label: "Argon2 대신 crypto.subtle PBKDF2",
+            detail:
+              "Argon2가 무차별 대입엔 더 강하지만 WASM 의존성이 붙는다. 브라우저 내장 API만으로 끝나는 PBKDF2를 택해 프론트 의존성을 0으로 유지했다.",
+          },
+          {
+            label: "평문은 호출 순간에만, 즉시 폐기",
+            detail:
+              "클라이언트가 로컬 복호화한 평문을 provider 호출 요청 1건에만 싣고 서버는 쓰는 즉시 버린다. 유도 키도 sessionStorage에만 저장해 탭을 닫으면 사라진다.",
           },
         ],
+        outcome:
+          "서버가 어떤 시점에도 사용자 키 평문에 접근하지 못하는 구조로 전환했다. 패스프레이즈를 분실하면 저장된 키도 복구 불가능한데, 이는 서버 신뢰를 설계에서 배제하기 위한 의도된 트레이드오프다.",
         image: {
           src: "/images/projects/modu-yaksok/mockup-api-key-passphrase.png",
           caption: "패스프레이즈 입력 — 서버에는 저장되지 않는다",
         },
       },
       {
-        title: "LLM이 해야 할 일과 코드가 해야 할 일을 나눴다",
+        title: "LLM이 할 일과 코드가 할 일을 나눴다",
         problem:
-          "프롬프트에 \"같은 태그는 후보당 최대 1곳\", \"점심·저녁 시간대면 식사 장소를 넣어라\" 같은 지시를 명시해도 지켜지지 않았다. \"와플\" 같은 강한 선호 태그를 넣으면 디저트·카페만으로 하루가 채워져 식사가 아예 없는 일정, 여러 지역을 입력했을 때 서로 멀리 떨어진 지역끼리 섞이는 일정이 반복됐다.",
+          "프롬프트에 \"같은 태그는 후보당 최대 1곳\", \"점심·저녁 시간대면 식사 장소를 넣어라\"를 명시해도 지켜지지 않았다. 직접 써보며 \"와플\" 같은 강한 선호 태그에 디저트·카페만으로 하루가 채워져 식사가 빠진 일정, 여러 지역을 입력하면 멀리 떨어진 지역이 한 코스로 섞이는 일정이 반복됐다. 프롬프트를 고쳐도 빈도만 줄 뿐 사라지지 않았다.",
+        considerations: [
+          "시간 겹침·예산·이동거리·식사 슬롯·태그 중복은 좌표와 시각만으로 코드가 확정 가능 — 프롬프트로 부탁할 대상이 아님",
+          "\"해산물 태그와 이자카야 카테고리가 의미적으로 겹치는가\" 같은 판단만 규칙으로 못 잡음 — 이것만 LLM에 남김",
+        ],
         solution: [
           {
-            label: "결정론적 조건(시간·예산·거리·식사슬롯·태그중복)",
-            detail: "규칙 기반 하드 필터로 코드 처리",
+            label: "계산 가능한 조건은 코드로 분리",
+            detail:
+              "시간 겹침·예산·이동거리·식사 슬롯·태그 중복은 좌표와 시각만 있으면 코드가 확정한다. 프롬프트로 부탁할 대상이 아니라고 보고 Step 3 앞단에 규칙 하드 필터를 설계해 넣었다.",
           },
           {
-            label: "의미적 판단만 LLM에 위임",
-            detail: "살아남은 후보에 1회 호출",
+            label: "규칙으로 못 잡는 판단만 LLM에",
+            detail:
+              "\"해산물 태그와 이자카야가 의미적으로 겹치는가\" 같은 판단만 LLM에 남기고, 규칙을 통과한 후보에만 1회 호출하도록 구성했다.",
           },
           {
-            label: "Step별 DeepEval 골든 데이터셋 회귀 테스트",
-            detail: "프롬프트·모델 변경 시 품질 저하 수치로 확인",
+            label: "후보 생성 알고리즘 버전을 따로 구현",
+            detail:
+              "beam search로 하드 조건을 생성 도중에 보장하면서 세 일정의 다양성을 함께 최적화하도록, LLM 생성과 별개 경로를 만들었다.",
+          },
+          {
+            label: "경계를 옮길 때마다 수치로 검증",
+            detail:
+              "Step별 DeepEval 골든 데이터셋 회귀 테스트를 붙여, 프롬프트나 모델을 바꾸면 같은 세트로 다시 돌려 품질 저하를 숫자로 확인한다.",
           },
         ],
+        outcome:
+          "식사 누락·원거리 혼합 같은 하드 조건 위반이 재현되지 않는다. 프롬프트나 모델을 바꿔도 같은 골든 세트로 회귀 검증해 품질 변화를 수치로 확인한다.",
+        image: {
+          src: "/images/projects/modu-yaksok/mockup-preference-conflict.png",
+          caption: "조건 입력 — 겹치는 선호는 생성 전에 짚어준다",
+        },
       },
       {
         title: "외부 API 호출량을 제어하되 서비스는 멈추지 않게",
         problem:
           "네이버 지역검색과 ODsay는 초당·일일 호출 한도가 있다. 장소 풀을 모으려면 카테고리 16종 × 태그만큼 팬아웃해야 해서, 한 번의 일정 생성이 수십 번의 호출로 번진다.",
+        image: {
+          src: "/images/projects/modu-yaksok/mockup-route-map.png",
+          caption: "지도·경로 상세 — 700m 이내 구간은 호출 없이 처리한다",
+        },
         solution: [
           {
-            label: "토큰버킷(초당) + Redis 카운터·자정 TTL(일일)",
-            detail: "여러 워커에서도 전역 집계 일치",
+            label: "초당·일일 한도를 나눠 관리",
+            detail:
+              "초당 상한은 토큰버킷, 일일 한도는 Redis 카운터 + 자정 TTL로 처리해 여러 워커에서도 전역 집계가 어긋나지 않게 했다.",
           },
           {
-            label: "예산 부족 시 요청 차단 대신 부분 검색",
-            detail: "카테고리 쿼리 우선 생존",
+            label: "부족하면 막지 않고 줄인다",
+            detail:
+              "예산이 모자라면 요청을 차단하는 대신 확보 가능한 만큼만 검색하고, 카테고리 쿼리를 우선 생존시켜 결과 품질을 지킨다.",
           },
           {
-            label: "ODsay 700m 이내 구간 사전 필터링",
-            detail: "호출 자체를 생략",
+            label: "부를 필요 없는 호출은 생략",
+            detail: "ODsay는 700m 이내 도보 구간을 사전에 걸러 호출 자체를 건너뛴다.",
           },
         ],
       },
     ],
-    screens: [
-      {
-        src: "/images/projects/modu-yaksok/mockup-preference-conflict.png",
-        caption: "조건 입력 — 선호 충돌은 미리 짚어준다",
-      },
-      {
-        src: "/images/projects/modu-yaksok/mockup-route-map.png",
-        caption: "지도·경로 상세 — 실제 이동 경로로 동선을 검증한다",
-      },
-    ],
+    screens: [],
     result: "배포 운영 중 · https://moduyaksok.vercel.app",
   },
   {
@@ -166,6 +196,20 @@ export const projects: Project[] = [
       },
     ],
     diagramSrc: "/images/projects/masil/diagram-pipeline.svg",
+    diagramCaptions: [
+      {
+        label: "Spring WebFlux",
+        detail: "AI 요청은 응답까지 오래 걸린다 — 요청 단위로 스레드를 점유하지 않기 위해",
+      },
+      {
+        label: "Pydantic AI",
+        detail: "단계마다 출력 형태가 흔들린다 — 각 step 입출력을 스키마로 고정하기 위해",
+      },
+    ],
+    heroScreen: {
+      src: "/images/projects/masil/screen-chat-itinerary.png",
+      caption: "AI 일정·예약 후보 제안",
+    },
     decisions: [
       {
         title: "요청 분류 단계를 파이프라인 진입 전에 설계해 넣었다",
@@ -186,16 +230,38 @@ export const projects: Project[] = [
           },
         ],
       },
+      {
+        title: "WebFlux 위에서 DB 접근만 블로킹으로 남아있던 문제를 없앴다",
+        problem:
+          "WebFlux로 비동기 요청 처리를 구성했는데 DB 접근 계층이 블로킹 방식이라, 그 구간에서 비동기 흐름이 끊겼다.",
+        solution: [
+          {
+            label: "R2DBC로 전환",
+            detail: "데이터 접근 계층까지 완전 비동기화해 요청 처리 전 구간의 흐름을 맞춤",
+          },
+        ],
+      },
+      {
+        title: "LLM API 호출 폭주로 대화 흐름이 끊기는 문제를 막았다",
+        problem:
+          "LLM API의 429 응답이 발생하면 대화 흐름이 그대로 끊겼다. 재시도만으로는 호출 폭주 자체를 막지 못했다.",
+        solution: [
+          {
+            label: "Token Bucket으로 호출 속도 사전 완화",
+            detail: "폭주 자체를 구조적으로 억제",
+          },
+          {
+            label: "exponential backoff & jitter 재시도",
+            detail: "429 발생 시에도 대화가 끊기지 않도록 보완",
+          },
+        ],
+      },
     ],
     cardImage: {
       src: "/images/projects/masil/card-hero.png",
       caption: "AI 채팅부터 예약·일정 관리까지",
     },
     screens: [
-      {
-        src: "/images/projects/masil/screen-chat-itinerary.png",
-        caption: "AI 일정·예약 후보 제안",
-      },
       {
         src: "/images/projects/masil/screen-reservation-status.png",
         caption: "예약 상태",

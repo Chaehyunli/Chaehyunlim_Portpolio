@@ -41,7 +41,7 @@
   <!-- N3 요청 분류 : LLM -->
   <g>
     <text x="574" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 3</text>
-    <rect rx="8" x="560" y="70" width="220" height="170" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+    <rect rx="8" x="560" y="70" width="220" height="170" fill="#EBF3FF" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
     <text x="574" y="98" font-size="14" font-weight="700" fill="#191F28">요청 분류</text>
     <text x="574" y="122" font-size="10" fill="#8B95A1">classification_agent</text>
     <text x="574" y="136" font-size="10" fill="#8B95A1">cancel·chat·itinerary</text>
@@ -82,7 +82,7 @@
   <!-- Phase 1 데이터 수집 (병렬) : Algorithm -->
   <g>
     <text x="54" y="322" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4-1</text>
-    <rect rx="8" x="40" y="340" width="610" height="140" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
+    <rect rx="8" x="40" y="340" width="610" height="140" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
     <text x="54" y="370" font-size="14" font-weight="700" fill="#191F28">Phase 1. 데이터 수집 (병렬)</text>
     <text x="610" y="370" text-anchor="end" font-size="16" font-weight="700" fill="#191F28">✓</text>
     <text x="54" y="396" font-size="10" fill="#191F28"><tspan font-weight="700" fill="#191F28">Tavily</tspan> 웹요약 · 날씨 조회</text>
@@ -93,7 +93,7 @@
   <!-- Phase 2 일정 계획 : LLM -->
   <g>
     <text x="704" y="322" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4-2</text>
-    <rect rx="8" x="690" y="340" width="610" height="140" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+    <rect rx="8" x="690" y="340" width="610" height="140" fill="#EBF3FF" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
     <text x="704" y="370" font-size="14" font-weight="700" fill="#191F28">Phase 2. 일정 계획</text>
     <text x="1260" y="370" text-anchor="end" font-size="16" font-weight="700" fill="#191F28">✓</text>
     <text x="704" y="396" font-size="10" fill="#191F28"><tspan font-weight="700" fill="#191F28">planner_agent</tspan> · 항공/숙소 선택</text>
@@ -104,7 +104,7 @@
   <!-- Phase 3 장소/동선 (병렬) : Algorithm -->
   <g>
     <text x="54" y="498" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4-3</text>
-    <rect rx="8" x="40" y="520" width="610" height="140" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
+    <rect rx="8" x="40" y="520" width="610" height="140" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
     <text x="54" y="550" font-size="14" font-weight="700" fill="#191F28">Phase 3. 장소/동선 (병렬)</text>
     <text x="610" y="550" text-anchor="end" font-size="16" font-weight="700" fill="#191F28">✓</text>
     <text x="54" y="576" font-size="10" fill="#191F28"><tspan font-weight="700" fill="#191F28">Google Places</tspan> · <tspan font-weight="700" fill="#191F28">Routes</tspan></text>
@@ -115,7 +115,7 @@
   <!-- Phase 4 일정 생성 : LLM -->
   <g>
     <text x="704" y="498" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4-4</text>
-    <rect rx="8" x="690" y="520" width="610" height="140" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+    <rect rx="8" x="690" y="520" width="610" height="140" fill="#EBF3FF" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
     <text x="704" y="550" font-size="14" font-weight="700" fill="#191F28">Phase 4. 일정 생성</text>
     <text x="1260" y="550" text-anchor="end" font-size="16" font-weight="700" fill="#191F28">✓</text>
     <text x="704" y="576" font-size="10" fill="#191F28"><tspan font-weight="700" fill="#191F28">synthesizer_agent</tspan> · 일정 스트리밍 생성</text>
@@ -132,4 +132,7 @@
 
   <text x="850" y="708" font-size="14" font-weight="700" fill="#191F28">✓</text>
   <text x="870" y="708" font-size="11" fill="#191F28">DeepEval 골든 데이터셋 검증 구간</text>
+
+  <rect rx="8" x="1120" y="694" width="40" height="20" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
+  <text x="1168" y="708" font-size="11" fill="#191F28">본인 설계·구현 영역</text>
 </svg>
