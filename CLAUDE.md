@@ -3,10 +3,12 @@
 이 리포에서 작업할 때 지켜야 할 규칙. 설계 배경 전체는 [docs/superpowers/specs/2026-08-23-portfolio-site-design.md](./docs/superpowers/specs/2026-08-23-portfolio-site-design.md).
 
 > **2026-08-25 개정**: 디자인 톤을 무채색 3색 고정 → 토스(Toss) 스타일로 전면 전환. 사이트 구조도 단일 스크롤 → 홈(카드 그리드) + 프로젝트별 상세 페이지로 전환. 이전 버전(무채색·단일 스크롤)은 git 히스토리에서 확인 가능.
+>
+> **2026-08-29 개정**: 상세 페이지를 모두약속 기준으로 표준화 — 슬라이드 3장 + `Divider`, 판단 본문 STAR(S&T/Action/Result) 구조, 판단 이미지 3행 그리드, `BlockHeading`·`DecisionBlock`·`StarBlock`·`SolutionPoints`·`Divider` 컴포넌트. 아래 「상세 페이지 = 데이터로 조립」 참고.
 
 ## 디자인 톤 (고정값, 바꾸지 않음)
 
-- 컬러 팔레트는 `app/globals.css`의 `@theme`에 정의된 토스 스타일 토큰만 쓴다: 배경(`--color-bg` #f2f4f6) · 카드(`--color-card` #fff) · 텍스트(`--color-text` #191f28) · 보조 텍스트(`--color-sub`) · 흐린 텍스트(`--color-muted`) · 테두리(`--color-border`) · 액센트 블루(`--color-blue`/`--color-blue-bg`) · 상태색 4종(green/purple/orange/gray, 각각 `-bg` 페어). 이 팔레트 밖의 hex를 컴포넌트에 하드코딩하지 않는다.
+- 컬러 팔레트는 `app/globals.css`의 `@theme`에 정의된 토스 스타일 토큰만 쓴다: 배경(`--color-bg` #f2f4f6) · 카드(`--color-card` #fff) · 텍스트(`--color-text` #191f28) · 보조 텍스트(`--color-sub`) · 흐린 텍스트(`--color-muted`) · 테두리(`--color-border` #e5e8eb) · 진한 구분선(`--color-border-strong` #d1d6db, `Divider`·상단 바용) · 액센트 블루(`--color-blue`/`--color-blue-bg`) · 상태색 4종(green/purple/orange/gray, 각각 `-bg` 페어). 이 팔레트 밖의 hex를 컴포넌트에 하드코딩하지 않는다.
 - 라이트 테마 단일 고정. 다크모드 분기(`prefers-color-scheme`, `dark:` variant)를 만들지 않는다.
 - 폰트: 본문은 Inter(`--font-sans`), 캡션·라벨·스택 태그·다이어그램은 JetBrains Mono(`--font-mono`)로 구분한다.
 - 모션은 `.reveal` 클래스의 절제된 페이드/translateY 하나만 쓴다(항목마다 `transitionDelay`로 스태거 가능). 새 애니메이션 라이브러리(Framer Motion 등)를 들여오지 않는다.
@@ -18,8 +20,39 @@
 
 - 홈(`app/page.tsx`)은 카드형 랜딩: 프로필 히어로 카드 + 학력·경력 카드 + 프로젝트 카드 그리드(`ProjectCard`, `content/projects.ts` 순서 그대로).
 - 프로젝트마다 별도 라우트 `app/[projectId]/page.tsx` (동적 세그먼트, `generateStaticParams`로 6개 프로젝트 정적 생성). 카드를 클릭하면 해당 프로젝트 상세 페이지로 이동 — 단일 스크롤로 되돌리지 않는다.
-- 상세 페이지는 상단 고정 바(← 목록 링크 + 상태 칩) + 왼쪽 sticky 사이드바(기간·역할·하이라이트·스택·링크) + 오른쪽 스크롤 본문(소개, 다이어그램, 판단, 서비스 화면) 2단 구조를 유지한다.
+- 상세 페이지(`ProjectDetail`)는 **모두약속을 표준 템플릿**으로 삼는다. 상단 고정 바(← 목록 blue pill + 상태 칩) + 왼쪽 sticky 사이드바(기간·역할·하이라이트·스택·링크) + 오른쪽 본문 2단. 본문은 **슬라이드 3장**을 `Divider`로 나눈다:
+  1. **개요·동작** — 제목·한 줄 정의 → `배경 / 왜 만들었나`(`introScreen` + `why`) → `설계 / 어떻게 동작하나`(`diagramSrc` 다이어그램 + `heroScreen` + `diagramCaptions`)
+  2. **판단** — `판단 01/02/…` 카드(`DecisionBlock`). 판단 **사이에도** `Divider`를 넣는다.
+  3. **서비스 화면·결과** — `screens` 2열 그리드 + `result` 마무리 띠
+- 슬라이드·판단 소제목은 전부 `BlockHeading`(모노 블루 eyebrow + 굵은 h3) 하나로 통일한다.
 - 오른쪽 고정 목차 내비게이션은 다중 페이지 구조와 맞지 않아 제거했다 — 페이지 이동은 카드 클릭 + 상세 페이지 상단의 "← 목록" 링크로 처리한다.
+
+## 상세 페이지 = 데이터로 조립
+
+`ProjectDetail`은 `Project` 하나를 받아 렌더할 뿐, 레이아웃 분기는 전부 **데이터 필드 유무**로 결정된다. 새 프로젝트 페이지를 모두약속처럼 만들려면 컴포넌트를 건드리지 말고 `content/projects.ts`의 필드를 채운다.
+
+| 채우는 필드 | 나오는 레이아웃 |
+|---|---|
+| `introScreen` + `why[]` | 슬라이드 1 `배경 / 왜 만들었나` — `ImagePointsGrid` |
+| `diagramSrc` (+`heroScreen`+`diagramCaptions[]`) | 슬라이드 1 `설계 / 어떻게 동작하나` — 다이어그램 전체 폭 + 캡션 그리드 |
+| `decisions[].considerations[]` **또는** `.outcome` | 그 판단이 **STAR 모드**(S&T / Action / Result 3단락). 둘 다 없으면 compact(제목 + 문단 + 카드) |
+| `decisions[].image` | 그 판단이 **3행 그리드**(S&T 헤더 전체 폭 / Action·이미지 좌우 / Result 푸터 전체 폭). 이미지는 Action 높이 안에서 세로 가운데(`self-center`) |
+| `screens[]` | 슬라이드 3 서비스 화면 2열 그리드 |
+| `result` | 마무리 띠 (모노, 필수) |
+
+가벼운 프로젝트(동아리모아·노소공)는 `considerations`/`outcome`/`image`를 **비워** compact로 두면 분량이 자동으로 짧아진다 — 무게 배분은 필드로 조절하지, 컴포넌트로 조절하지 않는다.
+
+### 컴포넌트 인벤토리
+
+| 컴포넌트 | 역할 | 재사용 규칙 |
+|---|---|---|
+| `ui/BlockHeading` | 슬라이드·판단 공통 소제목 | eyebrow=짧은 라벨(`배경`/`설계`/`판단 01`), title이 내용. 새 소제목은 전부 이걸로 |
+| `sections/DecisionBlock` | 판단 하나 렌더 (STAR/compact + 이미지 그리드 분기) | `ProjectDetail`이 `decisions.map`으로 호출. 판단 렌더 로직은 여기에만 |
+| `ui/StarBlock` | STAR 단락 1개 — 좌측 색 보더 + 모노 라벨 | tone `situation`(회색)·`action`(파랑)·`result`(초록) 3개 고정 |
+| `ui/SolutionPoints` | Action 박스 카드 리스트 | `stack`=단일 열(이미지 옆). label=판단, detail=근거·트레이드오프 |
+| `ui/ImagePointsGrid` | 이미지 + 텍스트 카드 좌우, 카드를 **이미지 높이**에 균등 분배 | 캡션은 별도 행이라 카드 높이에 안 들어간다. 슬라이드 1 전용 |
+| `ui/FramedImage` | 스크린샷 프레임(`rounded-md` + `shadow-card` + 모노 캡션) | 슬라이드 3 `screens` |
+| `ui/Divider` | 슬라이드·판단 사이 구분선 (`border-border-strong`) | 절대 간격값 대신 이걸로 구획 |
 
 ## 콘텐츠 작성 규칙 (노션 00-1 공통 작성 가이드 요약)
 
@@ -35,8 +68,13 @@
 문장 규칙:
 - 무주어 서술 금지. "…를 두었다" → "…를 설계해 넣었다", "…가 있다" → "…를 구현했다"로 행위 동사를 쓴다.
 - 수치를 쓸 때는 측정 조건을 함께 명시한다 (예: "250ms → 10ms"만 쓰지 않고 "키워드 5개 기준"을 붙인다).
-- `SolutionPoint`(label/detail 캡션 리스트)는 label에 배지·헤더에 이미 있는 말을 반복하지 않는다.
-- `problem`(문제 상황)은 서술형 문단, `solution`/`why`/`diagramCaptions`(핵심 포인트)는 "굵은 키워드 — 짧은 결과" 캡션형으로 쓴다. 두 톤을 한 항목 안에서 섞지 않는다.
+- `SolutionPoint`의 label에 배지·헤더에 이미 있는 말을 반복하지 않는다.
+
+판단(`ProjectDecision`) 필드별 톤 — STAR 기법에 맞춘다:
+- `problem` = 마주한 상황을 **서술형 문단**으로. `considerations[]` = "기각한 대안 / 판단을 가른 기준"을 불릿로. 이 둘이 함께 **Situation & Task** 단락을 이룬다.
+- `solution[]`(**Action**)은 캡션이 아니라 **판단 서술**이다: `label` = 내가 내린 판단(짧게), `detail` = 채택한 기술 + 근거 + 포기한 것을 1~2문장으로. Action이 판단의 주인공이므로 "굵은 키워드 — 짧은 결과"로 줄이지 않는다.
+- `outcome`(**Result**) = 그 행동이 만든 유의미한 결과를 1~2문장 서술형으로.
+- `why[]` / `diagramCaptions[]`는 여전히 "굵은 키워드 — 짧은 결과" 캡션형을 유지한다 (판단 본문과 다른 톤).
 
 프로젝트별 분량(무게 배분, 임의로 늘리지 않음):
 
@@ -54,10 +92,11 @@
 
 프로젝트 상세 페이지마다 다이어그램/스크린샷/설명 텍스트를 배치할 때 아래 순서와 톤을 기본값으로 재사용한다 — 페이지마다 새로 디자인하지 않는다.
 
-- 다이어그램(또는 대표 이미지)을 본문 상단에 전체 폭으로 두고, 스크린샷 + 설명 텍스트는 그 아래 `ImagePointsGrid`로 배치한다. 이 컴포넌트는 텍스트 리스트를 이미지와 같은 높이로 늘려(`stretch` + `justify-between`) 항목 개수에 따라 균등 분배한다 — 절대 간격값을 쓰지 않는다.
+- **슬라이드 1**: 다이어그램은 `설계` 소제목 아래 본문 전체 폭 + `overflow-x-auto`(좁은 화면만 가로 스크롤). 스크린샷 + 설명 텍스트는 `ImagePointsGrid` — 텍스트 카드를 **캡션 뺀 이미지 높이**에 맞춰 늘려(`grid-rows` 분리 + `justify-between`) 항목 개수에 따라 균등 분배한다. 절대 간격값을 쓰지 않는다.
+- **판단 이미지**(`DecisionBlock`의 3행 그리드): S&T·Result는 `col-span-2` 전체 폭(헤더/푸터), Action 카드와 이미지가 가운데 행에서 좌우(`3fr / 2fr`). 이미지+캡션은 `figure` 하나로 묶어 Action 높이 안에서 `self-center`(세로 가운데) — Action이 이미지보다 길어지는 게 기본이라 stretch는 쓰지 않는다.
 - 스크린샷은 `FramedImage`로 통일 — 모서리 둥글게(`rounded-md`) + 그림자(`shadow-card`) + 바로 아래 모노 폰트 캡션. 실제 사진이 섞여도 다이어그램과 톤이 끊기지 않게 한다.
 - 다이어그램 노드가 실제 실행 순서를 가지면(파이프라인, 요청 처리 흐름 등) Step 번호를 라벨로 명시한다 — 장식용 번호가 아니라 실제 순서 정보라 허용.
-- LLM 처리와 알고리즘 처리가 섞인 다이어그램은 실선(알고리즘, `--color-border` 회색) / 점선(LLM, `--color-blue` 파랑) 테두리로 구분한다. 그 외 색은 쓰지 않는다.
+- LLM 처리와 알고리즘 처리가 섞인 다이어그램은 실선(알고리즘, `--color-border` 회색) / 점선(LLM, `--color-blue` 파랑) 테두리로 구분한다. 그 외 색은 쓰지 않는다. 좁은 2단 본문 컬럼에 맞도록 가로로 길지 않게(모두약속 파이프라인 = 3칸 × 2줄) 그린다.
 - 홈 카드 그리드의 썸네일은 프로젝트의 `introScreen` 또는 `screens[0]`을 쓰고, 실제 화면이 아직 없는 프로젝트만 아이콘 단독 표시로 대체한다(`ProjectCard` 참고) — 아이콘을 이미지보다 우선하지 않는다.
 
 ## 스타일 통합 (Tailwind v4 ↔ CSS 변수)
@@ -69,7 +108,7 @@
 
 ## 콘텐츠 데이터
 
-프로젝트 콘텐츠는 `content/projects.ts`의 `Project[]`에서만 관리한다. 컴포넌트에 텍스트를 하드코딩하지 않는다. `introScreen`/`diagramSrc`/`diagramCaptions`/`heroScreen`은 옵셔널 — 아직 상세 콘텐츠를 안 채운 프로젝트는 카드 정보(`icon`/`title`/`oneLiner`/`meta`/`scope`/`status`/`badges`/`links`/`stack`)만으로도 카드와 상세 페이지 뼈대가 정상 렌더된다.
+프로젝트 콘텐츠는 `content/projects.ts`의 `Project[]`에서만 관리한다. 컴포넌트에 텍스트를 하드코딩하지 않는다. `introScreen`/`diagramSrc`/`diagramCaptions`/`heroScreen`, 그리고 판단별 `considerations`/`outcome`/`image`는 전부 옵셔널 — 아직 상세 콘텐츠를 안 채운 프로젝트는 카드 정보(`icon`/`title`/`oneLiner`/`meta`/`scope`/`status`/`badges`/`links`/`stack`) + 최소 `decisions`(`title`/`problem`/`solution`) + `result`만으로도 카드와 상세 페이지가 정상 렌더된다. 옵셔널 필드를 채울수록 그 판단이 compact → STAR → 이미지 그리드로 무거워진다 (위 「상세 페이지 = 데이터로 조립」 표 참고).
 
 ## 참고 자산
 
