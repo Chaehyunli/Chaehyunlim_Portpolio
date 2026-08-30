@@ -22,11 +22,27 @@ function SituationBody({ decision }: { decision: ProjectDecision }) {
   );
 }
 
+function Screenshot({ decision }: { decision: ProjectDecision }) {
+  const image = decision.image!;
+  return (
+    <>
+      <div className="overflow-hidden rounded-md shadow-card">
+        {/* eslint-disable-next-line @next/next/no-img-element -- 스크린샷은 크기가 제각각이라 원본 비율 그대로 */}
+        <img src={image.src} alt={image.caption} className="block w-full" />
+      </div>
+      <figcaption className="mt-[var(--space-1)] font-[family-name:var(--font-mono)] text-xs text-sub">
+        {image.caption}
+      </figcaption>
+    </>
+  );
+}
+
 /**
  * 판단 하나를 렌더한다. 레이아웃은 데이터로 갈린다:
  * - considerations 또는 outcome 있으면 STAR 3단락, 없으면 compact(문단 + 카드)
- * - image 있으면 3행 그리드(S&T 헤더 전체 폭 / Action·이미지 좌우 / Result 푸터 전체 폭),
- *   이미지는 Action 높이 안에서 세로 가운데(self-center)
+ * - image 없으면 세로 스택
+ * - image.narrow(세로 폰 목업): 텍스트 전체를 한 컬럼에, 폰을 옆에 (좌우 2단)
+ * - image 와이드(데스크톱 목업): S&T 헤더 / Action·이미지 좌우 / Result 푸터 3행 그리드
  */
 export function DecisionBlock({
   decision,
@@ -36,6 +52,7 @@ export function DecisionBlock({
   index: number;
 }) {
   const isStar = Boolean(decision.considerations || decision.outcome);
+  const wideImage = Boolean(decision.image && !decision.image.narrow);
 
   const heading = (
     <BlockHeading
@@ -44,86 +61,69 @@ export function DecisionBlock({
     />
   );
 
-  // 이미지 없는 판단: 세로 스택
+  const situation = isStar ? (
+    <StarBlock tone="situation" label="Situation & Task · 마주한 문제와 고민">
+      <SituationBody decision={decision} />
+    </StarBlock>
+  ) : (
+    <p className="max-w-none text-sm leading-relaxed text-text">{decision.problem}</p>
+  );
+  const action = isStar ? (
+    <StarBlock tone="action" label="Action · 나의 판단과 행동">
+      <SolutionPoints points={decision.solution} stack={wideImage} />
+    </StarBlock>
+  ) : (
+    <SolutionPoints points={decision.solution} stack={wideImage} />
+  );
+  const result = decision.outcome ? (
+    <StarBlock tone="result" label="Result · 결과">
+      <p className="max-w-none text-sm leading-relaxed text-text">{decision.outcome}</p>
+    </StarBlock>
+  ) : null;
+
+  // 이미지 없음 — 세로 스택
   if (!decision.image) {
     return (
       <div className="reveal space-y-5">
         {heading}
-        {isStar ? (
-          <>
-            <StarBlock tone="situation" label="Situation & Task · 마주한 문제와 고민">
-              <SituationBody decision={decision} />
-            </StarBlock>
-            <StarBlock tone="action" label="Action · 나의 판단과 행동">
-              <SolutionPoints points={decision.solution} />
-            </StarBlock>
-            {decision.outcome && (
-              <StarBlock tone="result" label="Result · 결과">
-                <p className="max-w-none text-sm leading-relaxed text-text">
-                  {decision.outcome}
-                </p>
-              </StarBlock>
-            )}
-          </>
-        ) : (
-          <>
-            <p className="max-w-none text-sm leading-relaxed text-text">{decision.problem}</p>
-            <SolutionPoints points={decision.solution} />
-          </>
-        )}
+        {situation}
+        {action}
+        {result}
       </div>
     );
   }
 
-  // 이미지 있는 판단: 3행 그리드
+  // 세로 폰 목업 — 텍스트 전체를 왼쪽 한 컬럼에, 폰을 오른쪽에 (헤더/푸터 X)
+  if (decision.image.narrow) {
+    return (
+      <div className="reveal space-y-5">
+        {heading}
+        <div className="md:grid md:grid-cols-[minmax(0,1fr)_340px] md:items-start md:gap-x-[var(--space-4)]">
+          <div className="space-y-5">
+            {situation}
+            {action}
+            {result}
+          </div>
+          <figure className="mt-5 md:mt-0">
+            <Screenshot decision={decision} />
+          </figure>
+        </div>
+      </div>
+    );
+  }
+
+  // 와이드 데스크톱 목업 — S&T(헤더, 전체 폭) / Action·이미지 좌우 / Result(푸터, 전체 폭)
   return (
     <div className="reveal space-y-5">
       {heading}
       <div className="space-y-5 md:grid md:grid-cols-[3fr_2fr] md:gap-x-[var(--space-4)] md:gap-y-0 md:space-y-0">
-        {/* 행 1 — S&T (전체 폭) */}
-        <div className="md:col-span-2 md:row-start-1 md:mb-5">
-          {isStar ? (
-            <StarBlock tone="situation" label="Situation & Task · 마주한 문제와 고민">
-              <SituationBody decision={decision} />
-            </StarBlock>
-          ) : (
-            <p className="max-w-none text-sm leading-relaxed text-text">{decision.problem}</p>
-          )}
-        </div>
-
-        {/* 행 2 좌 — Action */}
-        <div className="md:col-start-1 md:row-start-2 md:self-start">
-          {isStar ? (
-            <StarBlock tone="action" label="Action · 나의 판단과 행동">
-              <SolutionPoints points={decision.solution} stack />
-            </StarBlock>
-          ) : (
-            <SolutionPoints points={decision.solution} stack />
-          )}
-        </div>
-
-        {/* 행 2 우 — 이미지 + 캡션, Action 높이 안에서 세로 가운데 정렬 */}
+        <div className="md:col-span-2 md:row-start-1 md:mb-5">{situation}</div>
+        <div className="md:col-start-1 md:row-start-2 md:self-start">{action}</div>
         <figure className="md:col-start-2 md:row-start-2 md:self-center">
-          <div className="overflow-hidden rounded-md shadow-card">
-            {/* eslint-disable-next-line @next/next/no-img-element -- 스크린샷은 크기가 제각각이라 원본 비율 그대로 */}
-            <img
-              src={decision.image.src}
-              alt={decision.image.caption}
-              className="block w-full"
-            />
-          </div>
-          <figcaption className="mt-[var(--space-1)] font-[family-name:var(--font-mono)] text-xs text-sub">
-            {decision.image.caption}
-          </figcaption>
+          <Screenshot decision={decision} />
         </figure>
-
-        {/* 행 3 — Result (전체 폭, 이미지 아래에서 시작) */}
-        {decision.outcome && (
-          <div className="md:col-span-2 md:row-start-3 md:mt-5">
-            <StarBlock tone="result" label="Result · 결과">
-              <p className="max-w-none text-sm leading-relaxed text-text">{decision.outcome}</p>
-            </StarBlock>
-          </div>
+        {result && (
+          <div className="md:col-span-2 md:row-start-3 md:mt-5">{result}</div>
         )}
       </div>
     </div>

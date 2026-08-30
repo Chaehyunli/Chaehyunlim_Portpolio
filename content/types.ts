@@ -11,6 +11,8 @@ export interface TimelineEntry {
 export interface ProjectImage {
   src: string;
   caption: string;
+  /** 세로 폰 목업처럼 폭이 좁은 이미지 — 프레임을 좁게(max-w) 잡고 가운데 정렬한다. */
+  narrow?: boolean;
 }
 
 export interface SolutionPoint {

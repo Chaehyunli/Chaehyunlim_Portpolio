@@ -1,138 +1,129 @@
-<svg viewBox="0 0 1400 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" font-family="'JetBrains Mono', ui-monospace, monospace">
+<svg viewBox="0 0 1060 578" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" font-family="'JetBrains Mono', ui-monospace, monospace">
   <title id="title">Masil AI Agent 파이프라인</title>
-  <desc id="desc">요청 수신부터 SSE 응답까지 5단계 개요와, itinerary 타입만 진입하는 Phase 1~4 상세 흐름. 나머지 4개 타입은 STEP 4에서 STEP 5로 바로 응답한다. 점선 테두리는 LLM 호출(pydantic-ai), 실선 테두리는 알고리즘·인프라 처리를 뜻하며 ✓는 DeepEval 골든 데이터셋 검증 구간이다.</desc>
+  <desc id="desc">요청 수신부터 SSE 응답까지 5단계 개요와, itinerary 타입만 진입하는 Phase 1~4 상세 흐름. 나머지 4개 타입은 STEP 4에서 STEP 5로 바로 응답한다. 점선 테두리는 LLM 호출(pydantic-ai), 실선 테두리는 알고리즘·인프라 처리, 파란 배경은 본인 설계·구현 영역, ✓는 DeepEval 골든 데이터셋 검증 구간이다.</desc>
 
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#191F28"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#B0B8C1"/>
     </marker>
   </defs>
 
-  <rect x="0" y="0" width="1400" height="730" fill="#F2F4F6"/>
+  <rect x="0" y="0" width="1060" height="578" fill="#FFFFFF"/>
+  <text x="14" y="22" font-size="12" font-weight="700" fill="#191F28">AI Agent 파이프라인 <tspan fill="#8B95A1" font-weight="400">· LLM ↔ 알고리즘 · 파란 배경 = 본인 영역</tspan></text>
 
-  <text x="700" y="26" text-anchor="middle" font-size="13" letter-spacing="0.03em" fill="#191F28">Masil — AI Agent 파이프라인 <tspan fill="#8B95A1">· LLM ↔ 알고리즘 경계</tspan></text>
+  <!-- ===== Top row: 5 steps ===== -->
+  <line x1="205" y1="115" x2="220" y2="115" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <line x1="414" y1="115" x2="429" y2="115" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <line x1="623" y1="115" x2="638" y2="115" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <line x1="832" y1="115" x2="847" y2="115" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
 
-  <!-- Top row arrows -->
-  <line x1="260" y1="155" x2="300" y2="155" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <line x1="520" y1="155" x2="560" y2="155" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <line x1="780" y1="155" x2="820" y2="155" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <line x1="1040" y1="155" x2="1080" y2="155" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-
-  <!-- N1 사용자 입력 -->
+  <!-- STEP 1 : 진입(공동) -->
   <g>
-    <text x="54" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 1</text>
-    <rect rx="8" x="40" y="70" width="220" height="170" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
-    <text x="54" y="98" font-size="14" font-weight="700" fill="#191F28">사용자 입력</text>
-    <text x="54" y="122" font-size="10" fill="#8B95A1">자연어 메시지</text>
-    <text x="54" y="136" font-size="10" fill="#8B95A1">POST /api/v1/ai-messages</text>
-    <text x="54" y="220" font-size="9" fill="#8B95A1">Spring WebFlux</text>
+    <rect rx="8" x="15" y="40" width="190" height="150" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
+    <text x="29" y="62" font-size="9" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 1</text>
+    <text x="29" y="86" font-size="13" font-weight="700" fill="#191F28">사용자 입력</text>
+    <text x="29" y="108" font-size="9.5" fill="#8B95A1">자연어 메시지</text>
+    <text x="29" y="124" font-size="9.5" fill="#8B95A1">POST /ai-messages</text>
+    <text x="29" y="178" font-size="8.5" fill="#8B95A1">Spring WebFlux</text>
   </g>
 
-  <!-- N2 컨텍스트 로드 -->
+  <!-- STEP 2 : 본인 -->
   <g>
-    <text x="314" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 2</text>
-    <rect rx="8" x="300" y="70" width="220" height="170" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
-    <text x="314" y="98" font-size="14" font-weight="700" fill="#191F28">컨텍스트 로드</text>
-    <text x="314" y="122" font-size="10" fill="#8B95A1">Redis · DB · pgvector 조회</text>
-    <text x="314" y="136" font-size="10" fill="#8B95A1">대화 이력 병합</text>
-    <text x="314" y="220" font-size="9" fill="#8B95A1">R2DBC</text>
+    <rect rx="8" x="224" y="40" width="190" height="150" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
+    <text x="238" y="62" font-size="9" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 2</text>
+    <text x="238" y="86" font-size="13" font-weight="700" fill="#191F28">컨텍스트 로드</text>
+    <text x="238" y="108" font-size="9.5" fill="#8B95A1">Redis·DB·pgvector 조회</text>
+    <text x="238" y="124" font-size="9.5" fill="#8B95A1">대화 이력 병합</text>
+    <text x="238" y="178" font-size="8.5" fill="#8B95A1">R2DBC</text>
   </g>
 
-  <!-- N3 요청 분류 : LLM -->
+  <!-- STEP 3 : 본인 · LLM -->
   <g>
-    <text x="574" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 3</text>
-    <rect rx="8" x="560" y="70" width="220" height="170" fill="#EBF3FF" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
-    <text x="574" y="98" font-size="14" font-weight="700" fill="#191F28">요청 분류</text>
-    <text x="574" y="122" font-size="10" fill="#8B95A1">classification_agent</text>
-    <text x="574" y="136" font-size="10" fill="#8B95A1">cancel·chat·itinerary</text>
-    <text x="574" y="150" font-size="10" fill="#8B95A1">change·reservation 판별</text>
-    <text x="574" y="212" font-size="9" fill="#8B95A1">LLM · pydantic-ai</text>
-    <text x="574" y="226" font-size="9" fill="#8B95A1">Token Bucket 레이트리밋</text>
+    <rect rx="8" x="433" y="40" width="190" height="150" fill="#EBF3FF" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="447" y="62" font-size="9" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 3</text>
+    <text x="447" y="86" font-size="13" font-weight="700" fill="#191F28">요청 분류</text>
+    <text x="447" y="108" font-size="9.5" fill="#8B95A1">classification_agent</text>
+    <text x="447" y="124" font-size="9.5" fill="#8B95A1">cancel·chat·itinerary</text>
+    <text x="447" y="138" font-size="9.5" fill="#8B95A1">change·reservation 판별</text>
+    <text x="447" y="178" font-size="8.5" fill="#8B95A1">LLM · Token Bucket 리밋</text>
   </g>
 
-  <!-- N4 타입별 실행 -->
+  <!-- STEP 4 : 본인 -->
   <g>
-    <text x="834" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4</text>
-    <rect rx="8" x="820" y="70" width="220" height="170" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
-    <text x="834" y="98" font-size="14" font-weight="700" fill="#191F28">타입별 실행</text>
-    <text x="834" y="122" font-size="10" fill="#8B95A1">itinerary → Phase 1~4</text>
-    <text x="834" y="136" font-size="10" fill="#8B95A1">나머지 4종 → 단일 응답</text>
-    <text x="834" y="220" font-size="9" fill="#8B95A1">FastAPI 라우팅</text>
+    <rect rx="8" x="642" y="40" width="190" height="150" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
+    <text x="656" y="62" font-size="9" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 4</text>
+    <text x="656" y="86" font-size="13" font-weight="700" fill="#191F28">타입별 실행</text>
+    <text x="656" y="108" font-size="9.5" fill="#8B95A1">itinerary → Phase 1~4</text>
+    <text x="656" y="124" font-size="9.5" fill="#8B95A1">나머지 4종 → 단일 응답</text>
+    <text x="656" y="178" font-size="8.5" fill="#8B95A1">FastAPI 라우팅</text>
   </g>
 
-  <!-- N5 SSE 스트리밍 : 종착 노드, 강조 stroke -->
+  <!-- STEP 5 : 본인 · 종착 강조 -->
   <g>
-    <text x="1094" y="52" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 5</text>
-    <rect rx="8" x="1080" y="70" width="220" height="170" fill="#ffffff" stroke="#E5E8EB" stroke-width="2"/>
-    <text x="1094" y="98" font-size="14" font-weight="700" fill="#191F28">SSE 스트리밍</text>
-    <text x="1094" y="122" font-size="10" fill="#8B95A1">일정·응답 청크 전송</text>
-    <text x="1094" y="136" font-size="10" fill="#8B95A1">실시간 응답</text>
-    <text x="1094" y="220" font-size="9" fill="#8B95A1">FastAPI → 클라이언트</text>
+    <rect rx="8" x="851" y="40" width="190" height="150" fill="#EBF3FF" stroke="#3182F6" stroke-width="2"/>
+    <text x="865" y="62" font-size="9" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 5</text>
+    <text x="865" y="86" font-size="13" font-weight="700" fill="#191F28">SSE 스트리밍</text>
+    <text x="865" y="108" font-size="9.5" fill="#8B95A1">일정·응답 청크 전송</text>
+    <text x="865" y="124" font-size="9.5" fill="#8B95A1">실시간 응답</text>
+    <text x="865" y="178" font-size="8.5" fill="#8B95A1">FastAPI → 클라이언트</text>
   </g>
 
-  <!-- Branch: N4 → Phase 1 (itinerary만 진입, 나머지 4종은 위 STEP4→STEP5 화살표로 직행) -->
-  <path d="M950,240 L950,300 L345,300 L345,340" fill="none" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <text x="960" y="293" font-size="9" fill="#8B95A1">itinerary만 진입</text>
+  <!-- Branch: STEP 4 → Phase 1 (itinerary만) -->
+  <path d="M737,190 L737,222 L200,222 L200,246" fill="none" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <text x="747" y="215" font-size="9" fill="#8B95A1">itinerary만 진입</text>
 
-  <!-- Phase grid arrows (실행 순서: 1→2→3→4) -->
-  <line x1="650" y1="410" x2="690" y2="410" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <path d="M995,480 L995,512 L345,512 L345,520" fill="none" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
-  <line x1="650" y1="590" x2="690" y2="590" stroke="#E5E8EB" stroke-width="1" marker-end="url(#arrow)"/>
+  <!-- ===== Phase grid 2×2 (itinerary 내부) ===== -->
+  <line x1="526" y1="303" x2="541" y2="303" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <path d="M797,360 L797,375 L200,375 L200,389" fill="none" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <line x1="526" y1="447" x2="541" y2="447" stroke="#E5E8EB" stroke-width="1.4" marker-end="url(#arrow)"/>
 
-  <!-- Phase 1 데이터 수집 (병렬) : Algorithm -->
+  <!-- Phase 1 -->
   <g>
-    <text x="54" y="322" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4-1</text>
-    <rect rx="8" x="40" y="340" width="610" height="140" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
-    <text x="54" y="370" font-size="14" font-weight="700" fill="#191F28">Phase 1. 데이터 수집 (병렬)</text>
-    <text x="610" y="370" text-anchor="end" font-size="16" font-weight="700" fill="#191F28">✓</text>
-    <text x="54" y="396" font-size="10" fill="#191F28"><tspan font-weight="700" fill="#191F28">Tavily</tspan> 웹요약 · 날씨 조회</text>
-    <text x="54" y="412" font-size="10" fill="#191F28">항공 구간 · 숙소 조회</text>
-    <text x="54" y="450" font-size="9" fill="#8B95A1">알고리즘 · 외부 API 병렬 호출, LLM 0회</text>
+    <rect rx="8" x="15" y="248" width="512" height="110" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
+    <text x="29" y="270" font-size="9" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 4-1</text>
+    <text x="513" y="270" text-anchor="end" font-size="13" font-weight="700" fill="#0dc07b">✓</text>
+    <text x="29" y="292" font-size="12.5" font-weight="700" fill="#191F28">Phase 1. 데이터 수집 (병렬)</text>
+    <text x="29" y="314" font-size="9.5" fill="#191F28">Tavily 웹요약 · 날씨 · 항공 구간 · 숙소 조회</text>
+    <text x="29" y="342" font-size="8.5" fill="#8B95A1">알고리즘 · 외부 API 병렬 호출, LLM 0회</text>
   </g>
 
-  <!-- Phase 2 일정 계획 : LLM -->
+  <!-- Phase 2 : LLM -->
   <g>
-    <text x="704" y="322" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4-2</text>
-    <rect rx="8" x="690" y="340" width="610" height="140" fill="#EBF3FF" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
-    <text x="704" y="370" font-size="14" font-weight="700" fill="#191F28">Phase 2. 일정 계획</text>
-    <text x="1260" y="370" text-anchor="end" font-size="16" font-weight="700" fill="#191F28">✓</text>
-    <text x="704" y="396" font-size="10" fill="#191F28"><tspan font-weight="700" fill="#191F28">planner_agent</tspan> · 항공/숙소 선택</text>
-    <text x="704" y="412" font-size="10" fill="#191F28">날짜별 방문 순서 확정</text>
-    <text x="704" y="450" font-size="9" fill="#8B95A1">LLM · pydantic-ai</text>
+    <rect rx="8" x="541" y="248" width="504" height="110" fill="#EBF3FF" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="555" y="270" font-size="9" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 4-2</text>
+    <text x="1031" y="270" text-anchor="end" font-size="13" font-weight="700" fill="#0dc07b">✓</text>
+    <text x="555" y="292" font-size="12.5" font-weight="700" fill="#191F28">Phase 2. 일정 계획</text>
+    <text x="555" y="314" font-size="9.5" fill="#191F28">planner_agent · 항공/숙소 선택 · 날짜별 방문 순서</text>
+    <text x="555" y="342" font-size="8.5" fill="#8B95A1">LLM · pydantic-ai</text>
   </g>
 
-  <!-- Phase 3 장소/동선 (병렬) : Algorithm -->
+  <!-- Phase 3 -->
   <g>
-    <text x="54" y="498" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4-3</text>
-    <rect rx="8" x="40" y="520" width="610" height="140" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
-    <text x="54" y="550" font-size="14" font-weight="700" fill="#191F28">Phase 3. 장소/동선 (병렬)</text>
-    <text x="610" y="550" text-anchor="end" font-size="16" font-weight="700" fill="#191F28">✓</text>
-    <text x="54" y="576" font-size="10" fill="#191F28"><tspan font-weight="700" fill="#191F28">Google Places</tspan> · <tspan font-weight="700" fill="#191F28">Routes</tspan></text>
-    <text x="54" y="592" font-size="10" fill="#191F28">관광지 입장료 검색</text>
-    <text x="54" y="630" font-size="9" fill="#8B95A1">알고리즘 · 외부 API 병렬 호출, LLM 0회</text>
+    <rect rx="8" x="15" y="389" width="512" height="110" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
+    <text x="29" y="411" font-size="9" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 4-3</text>
+    <text x="513" y="411" text-anchor="end" font-size="13" font-weight="700" fill="#0dc07b">✓</text>
+    <text x="29" y="433" font-size="12.5" font-weight="700" fill="#191F28">Phase 3. 장소/동선 (병렬)</text>
+    <text x="29" y="455" font-size="9.5" fill="#191F28">Google Places · Routes · 관광지 입장료 검색</text>
+    <text x="29" y="483" font-size="8.5" fill="#8B95A1">알고리즘 · 외부 API 병렬 호출, LLM 0회</text>
   </g>
 
-  <!-- Phase 4 일정 생성 : LLM -->
+  <!-- Phase 4 : LLM -->
   <g>
-    <text x="704" y="498" font-size="9" font-weight="700" letter-spacing="0.06em" fill="#191F28">STEP 4-4</text>
-    <rect rx="8" x="690" y="520" width="610" height="140" fill="#EBF3FF" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
-    <text x="704" y="550" font-size="14" font-weight="700" fill="#191F28">Phase 4. 일정 생성</text>
-    <text x="1260" y="550" text-anchor="end" font-size="16" font-weight="700" fill="#191F28">✓</text>
-    <text x="704" y="576" font-size="10" fill="#191F28"><tspan font-weight="700" fill="#191F28">synthesizer_agent</tspan> · 일정 스트리밍 생성</text>
-    <text x="704" y="592" font-size="10" fill="#191F28">클라이언트 전달</text>
-    <text x="704" y="630" font-size="9" fill="#8B95A1">LLM · pydantic-ai</text>
+    <rect rx="8" x="541" y="389" width="504" height="110" fill="#EBF3FF" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="555" y="411" font-size="9" font-weight="700" letter-spacing="0.05em" fill="#8B95A1">STEP 4-4</text>
+    <text x="1031" y="411" text-anchor="end" font-size="13" font-weight="700" fill="#0dc07b">✓</text>
+    <text x="555" y="433" font-size="12.5" font-weight="700" fill="#191F28">Phase 4. 일정 생성</text>
+    <text x="555" y="455" font-size="9.5" fill="#191F28">synthesizer_agent · 일정 스트리밍 생성 → 클라이언트</text>
+    <text x="555" y="483" font-size="8.5" fill="#8B95A1">LLM · pydantic-ai</text>
   </g>
 
   <!-- Legend -->
-  <rect rx="8" x="330" y="694" width="40" height="20" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
-  <text x="378" y="708" font-size="11" fill="#191F28">알고리즘 · 인프라</text>
-
-  <rect rx="8" x="580" y="694" width="40" height="20" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
-  <text x="628" y="708" font-size="11" fill="#191F28">LLM 호출 (pydantic-ai)</text>
-
-  <text x="850" y="708" font-size="14" font-weight="700" fill="#191F28">✓</text>
-  <text x="870" y="708" font-size="11" fill="#191F28">DeepEval 골든 데이터셋 검증 구간</text>
-
-  <rect rx="8" x="1120" y="694" width="40" height="20" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
-  <text x="1168" y="708" font-size="11" fill="#191F28">본인 설계·구현 영역</text>
+  <rect rx="4" x="15" y="536" width="24" height="14" fill="#ffffff" stroke="#E5E8EB" stroke-width="1"/>
+  <text x="45" y="547" font-size="9" fill="#191F28">알고리즘·인프라</text>
+  <rect rx="4" x="165" y="536" width="24" height="14" fill="#ffffff" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="195" y="547" font-size="9" fill="#191F28">LLM 호출(pydantic-ai)</text>
+  <rect rx="4" x="365" y="536" width="24" height="14" fill="#EBF3FF" stroke="#E5E8EB" stroke-width="1"/>
+  <text x="395" y="547" font-size="9" fill="#191F28">본인 설계·구현</text>
+  <text x="515" y="547" font-size="12" font-weight="700" fill="#0dc07b">✓</text>
+  <text x="530" y="547" font-size="9" fill="#191F28">DeepEval 검증 구간</text>
 </svg>

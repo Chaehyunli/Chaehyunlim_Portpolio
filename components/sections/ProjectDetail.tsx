@@ -6,6 +6,7 @@ import { Tag } from "@/components/ui/Tag";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { FramedImage } from "@/components/ui/FramedImage";
 import { ImagePointsGrid } from "@/components/ui/ImagePointsGrid";
+import { SolutionPoints } from "@/components/ui/SolutionPoints";
 import { BlockHeading } from "@/components/ui/BlockHeading";
 import { Divider } from "@/components/ui/Divider";
 import { DecisionBlock } from "@/components/sections/DecisionBlock";
@@ -17,7 +18,7 @@ export function ProjectDetail({ project }: { project: Project }) {
   const hasCaptions = Boolean(
     project.heroScreen && project.diagramCaptions && project.diagramCaptions.length > 0,
   );
-  const hasWhy = Boolean(project.introScreen && project.why.length > 0);
+  const hasWhy = project.why.length > 0;
 
   return (
     <div className="min-h-screen">
@@ -100,7 +101,11 @@ export function ProjectDetail({ project }: { project: Project }) {
                 {hasWhy && (
                   <div className="reveal space-y-4">
                     <BlockHeading eyebrow="배경" title="왜 만들었나" />
-                    <ImagePointsGrid image={project.introScreen!} points={project.why} />
+                    {project.introScreen ? (
+                      <ImagePointsGrid image={project.introScreen} points={project.why} />
+                    ) : (
+                      <SolutionPoints points={project.why} />
+                    )}
                   </div>
                 )}
 

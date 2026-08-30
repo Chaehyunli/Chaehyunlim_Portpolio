@@ -213,76 +213,110 @@ export const projects: Project[] = [
         label: "Pydantic AI",
         detail: "단계마다 출력 형태가 흔들린다 — 각 step 입출력을 스키마로 고정하기 위해",
       },
+      {
+        label: "구간별 DeepEval 검증",
+        detail: "LLM 파이프라인은 틀려도 어느 단계인지 모른다 — step마다 골든셋 테스트로 구간 특정",
+      },
     ],
     heroScreen: {
       src: "/images/projects/masil/screen-chat-itinerary.png",
       caption: "AI 일정·예약 후보 제안",
+      narrow: true,
     },
     decisions: [
       {
-        title: "요청 분류 단계를 파이프라인 진입 전에 설계해 넣었다",
+        title: "되돌릴 수 없는 동작은 파이프라인에 들어가기 전에 확정했다",
         problem:
-          "사용자 요청이 애매할 때 의도와 다른 동작으로 흘러 엉뚱한 예약·수정이 실행되는 문제가 있었다.",
+          "요청이 애매할 때 파이프라인이 그대로 진행되면 엉뚱한 동작이 실행됐다. \"그거 취소해줘\" 한마디가 일정을 새로 만들라는 건지, 예약을 취소하라는 건지 구분되지 않은 채 흘러가면 되돌릴 수 없는 예약·취소가 잘못 실행된다.",
+        considerations: [
+          "분류를 파이프라인 안에서 하면 이미 실행이 시작된 뒤라 되돌리기 어렵다 — 진입 전에 판단해야 한다",
+          "되돌릴 수 없는 동작(예약·취소)은 확정 전에 한 번 더 물어야 한다",
+        ],
         solution: [
           {
-            label: "chat·itinerary·reservation·change·cancel 5종 분류",
-            detail: "파이프라인 진입 전 요청 타입부터 확정",
+            label: "5종 분류를 파이프라인 진입 전에 설계해 넣었다",
+            detail:
+              "classification_agent가 대화 요약·선호·현재 일정·예약 정보를 함께 보고 chat·itinerary·reservation·change·cancel 중 하나로 타입을 확정한다.",
           },
           {
-            label: "분류 미확정 시 확인 단계로 분기",
-            detail: "확정 전에는 실행하지 않음",
+            label: "미확정이면 실행하지 않고 확인 단계로 분기",
+            detail:
+              "예약 취소는 대상을 명확히 안 골랐으면 후보를 먼저 제시하고 확인받도록 흐름을 바꿨다.",
           },
           {
-            label: "구간별 골든 데이터셋 테스트",
-            detail: "결과가 엉뚱할 때 요청 해석 단계 문제로 특정 가능",
+            label: "각 step에 DeepEval 골든 데이터셋 테스트",
+            detail:
+              "결과가 엉뚱할 때 응답 생성이 아니라 요청 해석 단계의 문제임을 특정할 수 있게 만들었다.",
           },
         ],
+        outcome:
+          "모호한 취소·수정 요청이 후보 확인 없이 실행되는 경우가 사라졌다. 파이프라인을 통째로 고치지 않고 구간 단위로 수정할 수 있어, 요청 해석이 틀렸을 때 그 step만 손본다.",
+        image: {
+          src: "/images/projects/masil/screen-reservation-status.png",
+          caption: "예약 상태 — 잘못 취소되면 되돌릴 수 없는 화면",
+          narrow: true,
+        },
       },
       {
         title: "WebFlux 위에서 DB 접근만 블로킹으로 남아있던 문제를 없앴다",
         problem:
-          "WebFlux로 비동기 요청 처리를 구성했는데 DB 접근 계층이 블로킹 방식이라, 그 구간에서 비동기 흐름이 끊겼다.",
+          "WebFlux로 비동기 요청 처리를 구성했는데 데이터 접근 계층이 블로킹 JPA라, 그 구간에서 비동기 흐름이 끊기고 AI 응답을 기다리는 동안 요청 스레드가 다시 묶였다.",
+        considerations: [
+          "WebFlux + 블로킹 JPA는 구조적 모순 — 비동기의 이점이 DB 구간에서 전부 사라진다",
+          "R2DBC는 라이브러리 교체가 아니라 계층 전환 — 직렬화·지연 평가·Redis 접근이 함께 바뀌어야 반쪽이 안 된다",
+        ],
         solution: [
           {
-            label: "R2DBC로 전환",
-            detail: "데이터 접근 계층까지 완전 비동기화해 요청 처리 전 구간의 흐름을 맞춤",
+            label: "R2DBC로 데이터 접근 계층까지 완전 비동기화",
+            detail: "요청 처리 전 구간의 논블로킹 흐름을 맞췄다.",
+          },
+          {
+            label: "라이브러리 교체로 끝내지 않고 주변까지 보완",
+            detail:
+              "Reactive Redis·JSON 변환기·테스트를 함께 정비하고, 전환 중 만난 lazy evaluation 오류를 수정해 비동기 체인 실행 시점을 안정화했다.",
           },
         ],
+        outcome:
+          "요청 처리 전 구간이 논블로킹으로 이어져, AI 응답을 기다리는 동안 요청 스레드가 묶이지 않는다. 전환을 직렬화·지연 평가·테스트까지 검증하고 마무리했다.",
+        image: {
+          src: "/images/projects/masil/screen-day-detail.png",
+          caption: "Day별 일정 상세 — 비동기 파이프라인이 만들어 내려보내는 결과",
+          narrow: true,
+        },
       },
       {
         title: "LLM API 호출 폭주로 대화 흐름이 끊기는 문제를 막았다",
         problem:
-          "LLM API의 429 응답이 발생하면 대화 흐름이 그대로 끊겼다. 재시도만으로는 호출 폭주 자체를 막지 못했다.",
+          "LLM API가 429를 반환하면 진행 중이던 대화 응답이 그대로 끊겼다. 사용자가 몰리거나 한 대화에서 agent가 여러 번 호출하면 순간 호출량이 한도를 넘겼다.",
+        considerations: [
+          "재시도(backoff)만으로는 이미 폭주한 호출을 늦출 뿐, 폭주 자체를 못 막는다 — 속도를 사전에 제한해야 한다",
+          "고정 간격 재시도는 여러 요청이 같은 타이밍에 몰려 다시 429를 부른다",
+        ],
         solution: [
           {
-            label: "Token Bucket으로 호출 속도 사전 완화",
-            detail: "폭주 자체를 구조적으로 억제",
+            label: "Token Bucket으로 호출 속도를 사전에 완화",
+            detail: "한도를 넘기 전에 호출 간격을 벌린다.",
           },
           {
-            label: "exponential backoff & jitter 재시도",
-            detail: "429 발생 시에도 대화가 끊기지 않도록 보완",
+            label: "429 발생 시 exponential backoff + jitter 재시도",
+            detail:
+              "지수적으로 간격을 늘리고 무작위 지연을 섞어 재요청이 서로 겹치지 않게 했다.",
           },
         ],
+        outcome:
+          "순간 호출량이 한도를 넘기 전에 눌리고, 그래도 429가 나면 대화가 끊기지 않고 재개된다. 재시도 로직은 테스트로 검증했다.",
+        image: {
+          src: "/images/projects/masil/screen-day-progress.png",
+          caption: "당일 진행 — SSE 스트림으로 실시간 갱신되는 화면",
+          narrow: true,
+        },
       },
     ],
     cardImage: {
       src: "/images/projects/masil/card-hero.png",
       caption: "AI 채팅부터 예약·일정 관리까지",
     },
-    screens: [
-      {
-        src: "/images/projects/masil/screen-reservation-status.png",
-        caption: "예약 상태",
-      },
-      {
-        src: "/images/projects/masil/screen-day-detail.png",
-        caption: "Day별 일정 상세",
-      },
-      {
-        src: "/images/projects/masil/screen-day-progress.png",
-        caption: "당일 진행",
-      },
-    ],
+    screens: [],
     result: "Android 앱 배포 · 명지대학교 Capstone 디자인 전시회 은상",
   },
   {
