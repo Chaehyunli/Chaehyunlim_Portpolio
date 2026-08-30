@@ -52,6 +52,7 @@ export function DecisionBlock({
   index: number;
 }) {
   const isStar = Boolean(decision.considerations || decision.outcome);
+  const hasImage = Boolean(decision.image);
   const wideImage = Boolean(decision.image && !decision.image.narrow);
 
   const heading = (
@@ -70,7 +71,7 @@ export function DecisionBlock({
   );
   const action = isStar ? (
     <StarBlock tone="action" label="Action · 나의 판단과 행동">
-      <SolutionPoints points={decision.solution} stack={wideImage} />
+      <SolutionPoints points={decision.solution} stack={hasImage} />
     </StarBlock>
   ) : (
     <SolutionPoints points={decision.solution} stack={wideImage} />
@@ -95,17 +96,42 @@ export function DecisionBlock({
 
   // 세로 폰 목업 — 텍스트 전체를 왼쪽 한 컬럼에, 폰을 오른쪽에 (헤더/푸터 X)
   if (decision.image.narrow) {
+    // S&T·Result는 폰 위아래에 고정, Action 카드가 남는 높이를 채운다 (빈 공간 대신 카드로)
+    const narrowAction = isStar ? (
+      <StarBlock
+        tone="action"
+        label="Action · 나의 판단과 행동"
+        className="md:min-h-0 md:flex-1"
+      >
+        <SolutionPoints points={decision.solution} stack fill />
+      </StarBlock>
+    ) : (
+      <div className="md:flex md:min-h-0 md:flex-1 md:flex-col">
+        <SolutionPoints points={decision.solution} stack fill />
+      </div>
+    );
     return (
       <div className="reveal space-y-5">
         {heading}
-        <div className="md:grid md:grid-cols-[minmax(0,1fr)_340px] md:items-start md:gap-x-[var(--space-4)]">
-          <div className="space-y-5">
+        {/* 캡션은 row 2로 빼서 높이 기준에서 제외 — Result 밑변이 이미지 하단(캡션 X)에 닿는다 */}
+        <div className="md:grid md:grid-cols-[minmax(0,1fr)_340px] md:gap-x-[var(--space-4)]">
+          <div className="space-y-5 md:col-start-1 md:row-start-1 md:flex md:h-full md:flex-col md:gap-5 md:space-y-0">
             {situation}
-            {action}
+            {narrowAction}
             {result}
           </div>
-          <figure className="mt-5 md:mt-0">
-            <Screenshot decision={decision} />
+          <figure className="md:contents">
+            <div className="mt-5 overflow-hidden rounded-md shadow-card md:col-start-2 md:row-start-1 md:mt-0 md:self-center">
+              {/* eslint-disable-next-line @next/next/no-img-element -- 스크린샷은 크기가 제각각이라 원본 비율 그대로 */}
+              <img
+                src={decision.image.src}
+                alt={decision.image.caption}
+                className="block w-full"
+              />
+            </div>
+            <figcaption className="mt-[var(--space-1)] font-[family-name:var(--font-mono)] text-xs text-sub md:col-start-2 md:row-start-2">
+              {decision.image.caption}
+            </figcaption>
           </figure>
         </div>
       </div>
