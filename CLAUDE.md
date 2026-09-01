@@ -34,9 +34,13 @@
 | 채우는 필드 | 나오는 레이아웃 |
 |---|---|
 | `introScreen` + `why[]` | 슬라이드 1 `배경 / 왜 만들었나` — `ImagePointsGrid` |
-| `diagramSrc` (+`heroScreen`+`diagramCaptions[]`) | 슬라이드 1 `설계 / 어떻게 동작하나` — 다이어그램 전체 폭 + 캡션 그리드 |
+| `showcaseScreen` + `showcasePoints[]` | 슬라이드 1 `사용 흐름` — 사용자 흐름 설명과 스크린샷을 2단으로 묶음. points가 없으면 단독 스크린샷 |
+| `diagramSrc` (+`heroScreen`+`diagramCaptions[]`) | 슬라이드 1 `설계 / 어떻게 동작하나` — 단일 다이어그램 전체 폭 + 캡션 그리드 |
+| `diagrams[]` | 한 장으로 축소하면 읽기 어려운 흐름을 단계별 다이어그램 여러 장으로 렌더. 값이 있으면 `diagramSrc`보다 우선 |
 | `decisions[].considerations[]` **또는** `.outcome` | 그 판단이 **STAR 모드**(S&T / Action / Result 3단락). 둘 다 없으면 compact(제목 + 문단 + 카드) |
 | `decisions[].image` | 그 판단이 **3행 그리드**(S&T 헤더 전체 폭 / Action·이미지 좌우 / Result 푸터 전체 폭). 이미지는 Action 높이 안에서 세로 가운데(`self-center`) |
+| `decisions[].diagram` | 해당 판단의 설계 구간을 S&T와 Action 사이에 전체 폭으로 표시. 노드 텍스트를 읽기 위해 Action 옆으로 축소하지 않음 |
+| `decisions[].order` | 데이터 배열과 다르게 실제 처리 흐름 순서로 판단을 보여줄 때 지정 |
 | `screens[]` | 슬라이드 3 서비스 화면 2열 그리드 |
 | `result` | 마무리 띠 (모노, 필수) |
 
@@ -93,9 +97,11 @@
 프로젝트 상세 페이지마다 다이어그램/스크린샷/설명 텍스트를 배치할 때 아래 순서와 톤을 기본값으로 재사용한다 — 페이지마다 새로 디자인하지 않는다.
 
 - **슬라이드 1**: 다이어그램은 `설계` 소제목 아래 본문 전체 폭 + `overflow-x-auto`(좁은 화면만 가로 스크롤). 스크린샷 + 설명 텍스트는 `ImagePointsGrid` — 텍스트 카드를 **캡션 뺀 이미지 높이**에 맞춰 늘려(`grid-rows` 분리 + `justify-between`) 항목 개수에 따라 균등 분배한다. 절대 간격값을 쓰지 않는다.
+- 한 장의 다이어그램이 본문 폭에서 축소돼 노드 본문이 읽히지 않으면, 무조건 가로 스크롤을 강제하지 말고 `diagrams[]`로 의미 있는 단계 단위로 나눈다. 각 장의 본문 텍스트는 데스크톱 렌더 기준 최소 12px 이상을 유지한다.
 - **판단 이미지**(`DecisionBlock`) — 이미지 종류로 레이아웃이 갈린다:
   - **와이드 데스크톱 목업**(모두약속): 3행 그리드. S&T·Result는 `col-span-2` 전체 폭(헤더/푸터), Action 카드와 이미지가 가운데 행에서 좌우(`3fr / 2fr`). 이미지는 Action 높이 안에서 `self-center`.
   - **세로 폰 목업**(`ProjectImage.narrow: true`, Masil): 좌우 2단. 텍스트 전체(S&T → Action → Result)를 왼쪽 한 컬럼에 쌓고 폰을 오른쪽 `340px` 트랙에 `self-start`. 폰이 길어 헤더/푸터로 나누면 컬럼에 빈 공간이 생겨서 이렇게 한다.
+- 판단의 성능·처리 구조가 실제 UI 스크린샷으로 증명되지 않는다면, 근거 없는 결과 이미지를 만들지 않는다. `decisions[].diagram`을 S&T와 Action 사이 전체 폭으로 배치하고, 측정 결과는 조건을 포함한 Result 텍스트로 남긴다. 사용자 경험 화면은 `showcaseScreen`으로 개요에 둔다.
 - `ImagePointsGrid`도 `image.narrow`면 이미지 트랙을 `340px`로 고정한다.
 - 스크린샷은 `FramedImage`로 통일 — 모서리 둥글게(`rounded-md`) + 그림자(`shadow-card`) + 바로 아래 모노 폰트 캡션. 실제 사진이 섞여도 다이어그램과 톤이 끊기지 않게 한다.
 - 다이어그램 노드가 실제 실행 순서를 가지면(파이프라인, 요청 처리 흐름 등) Step 번호를 라벨로 명시한다 — 장식용 번호가 아니라 실제 순서 정보라 허용.
@@ -111,7 +117,7 @@
 
 ## 콘텐츠 데이터
 
-프로젝트 콘텐츠는 `content/projects.ts`의 `Project[]`에서만 관리한다. 컴포넌트에 텍스트를 하드코딩하지 않는다. `introScreen`/`diagramSrc`/`diagramCaptions`/`heroScreen`, 그리고 판단별 `considerations`/`outcome`/`image`는 전부 옵셔널 — 아직 상세 콘텐츠를 안 채운 프로젝트는 카드 정보(`icon`/`title`/`oneLiner`/`meta`/`scope`/`status`/`badges`/`links`/`stack`) + 최소 `decisions`(`title`/`problem`/`solution`) + `result`만으로도 카드와 상세 페이지가 정상 렌더된다. 옵셔널 필드를 채울수록 그 판단이 compact → STAR → 이미지 그리드로 무거워진다 (위 「상세 페이지 = 데이터로 조립」 표 참고).
+프로젝트 콘텐츠는 `content/projects.ts`의 `Project[]`에서만 관리한다. 컴포넌트에 텍스트를 하드코딩하지 않는다. `introScreen`/`showcaseScreen`/`showcasePoints`/`diagramSrc`/`diagrams`/`diagramCaptions`/`heroScreen`, 그리고 판단별 `order`/`considerations`/`outcome`/`diagram`/`image`는 전부 옵셔널 — 아직 상세 콘텐츠를 안 채운 프로젝트는 카드 정보(`icon`/`title`/`oneLiner`/`meta`/`scope`/`status`/`badges`/`links`/`stack`) + 최소 `decisions`(`title`/`problem`/`solution`) + `result`만으로도 카드와 상세 페이지가 정상 렌더된다. 옵셔널 필드를 채울수록 그 판단이 compact → STAR → 이미지 그리드로 무거워진다 (위 「상세 페이지 = 데이터로 조립」 표 참고).
 
 ## 참고 자산
 

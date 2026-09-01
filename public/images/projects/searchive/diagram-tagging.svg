@@ -1,0 +1,38 @@
+<svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" font-family="'JetBrains Mono', ui-monospace, monospace">
+  <title id="title">Searchive 태그 생성과 정제 흐름</title>
+  <desc id="desc">문서를 색인하고 태그 후보를 넉넉히 추출한 뒤, 품질 필터로 대표 태그 후보를 정제하는 세 단계 흐름이다.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6B7685"/></marker>
+  </defs>
+  <rect width="1200" height="360" fill="#F2F4F6"/>
+  <text x="56" y="54" font-size="20" font-weight="700" fill="#191F28">태그 생성과 품질 정제</text>
+  <text x="56" y="82" font-size="14" fill="#6B7685">문서 업로드부터 대표 태그 후보를 고르는 결정론적 처리</text>
+
+  <line x1="372" y1="195" x2="422" y2="195" stroke="#6B7685" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="778" y1="195" x2="828" y2="195" stroke="#6B7685" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <g>
+    <text x="56" y="128" font-size="12" font-weight="700" letter-spacing="1.2" fill="#6B7685">STEP 1</text>
+    <rect x="56" y="146" width="316" height="156" rx="12" fill="#fff" stroke="#E5E8EB" stroke-width="2"/>
+    <text x="80" y="184" font-size="19" font-weight="700" fill="#191F28">문서 처리와 색인</text>
+    <text x="80" y="218" font-size="14" fill="#6B7685">PDF 업로드 → 텍스트 추출</text>
+    <text x="80" y="244" font-size="14" fill="#6B7685">Nori 형태소 분석 후 ES 색인</text>
+    <text x="80" y="280" font-size="12" fill="#8B95A1">MinIO · Elasticsearch</text>
+  </g>
+  <g>
+    <text x="422" y="128" font-size="12" font-weight="700" letter-spacing="1.2" fill="#6B7685">STEP 2</text>
+    <rect x="422" y="146" width="356" height="156" rx="12" fill="#fff" stroke="#E5E8EB" stroke-width="2"/>
+    <text x="446" y="184" font-size="19" font-weight="700" fill="#191F28">태그 후보 과추출</text>
+    <text x="446" y="218" font-size="14" fill="#191F28">목표 개수의 3배 또는 최소 10개</text>
+    <text x="446" y="244" font-size="14" fill="#6B7685">문서 &lt; 10: KeyBERT · 그 외: ES Significant Text</text>
+    <text x="446" y="280" font-size="12" fill="#8B95A1">알고리즘 · Cold Start 분기</text>
+  </g>
+  <g>
+    <text x="828" y="128" font-size="12" font-weight="700" letter-spacing="1.2" fill="#6B7685">STEP 3</text>
+    <rect x="828" y="146" width="316" height="156" rx="12" fill="#fff" stroke="#E5E8EB" stroke-width="2"/>
+    <text x="852" y="184" font-size="19" font-weight="700" fill="#191F28">태그 품질 필터</text>
+    <text x="852" y="218" font-size="14" fill="#6B7685">불용어·숫자·한 글자 토큰 제거</text>
+    <text x="852" y="244" font-size="14" fill="#6B7685">정규화·중복 제거 후 상위 3개 선택</text>
+    <text x="852" y="280" font-size="12" fill="#8B95A1">알고리즘 · 2단계 필터</text>
+  </g>
+</svg>

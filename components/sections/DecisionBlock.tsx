@@ -22,7 +22,14 @@ function SituationBody({ decision }: { decision: ProjectDecision }) {
   );
 }
 
-function Screenshot({ decision }: { decision: ProjectDecision }) {
+function Screenshot({
+  decision,
+  captionOutsideAlignment = false,
+}: {
+  decision: ProjectDecision;
+  /** 큰 와이드 이미지의 세로 정렬은 이미지 본체만 기준으로 맞춘다. */
+  captionOutsideAlignment?: boolean;
+}) {
   const image = decision.image!;
   return (
     <>
@@ -30,10 +37,30 @@ function Screenshot({ decision }: { decision: ProjectDecision }) {
         {/* eslint-disable-next-line @next/next/no-img-element -- 스크린샷은 크기가 제각각이라 원본 비율 그대로 */}
         <img src={image.src} alt={image.caption} className="block w-full" />
       </div>
-      <figcaption className="mt-[var(--space-1)] font-[family-name:var(--font-mono)] text-xs text-sub">
+      <figcaption
+        className={`mt-[var(--space-1)] font-[family-name:var(--font-mono)] text-xs text-sub ${
+          captionOutsideAlignment ? "md:absolute md:top-full md:left-0" : ""
+        }`}
+      >
         {image.caption}
       </figcaption>
     </>
+  );
+}
+
+function DecisionDiagram({ decision }: { decision: ProjectDecision }) {
+  const diagram = decision.diagram!;
+  return (
+    <figure>
+      <div className="overflow-x-auto rounded-md border border-border shadow-card">
+        {/* eslint-disable-next-line @next/next/no-img-element -- SVG 다이어그램은 next/image 최적화 대상이 아님 */}
+        <img
+          src={diagram.src}
+          alt={`${decision.title} 설계 다이어그램`}
+          className="block w-full min-w-[680px]"
+        />
+      </div>
+    </figure>
   );
 }
 
@@ -54,6 +81,8 @@ export function DecisionBlock({
   const isStar = Boolean(decision.considerations || decision.outcome);
   const hasImage = Boolean(decision.image);
   const wideImage = Boolean(decision.image && !decision.image.narrow);
+  const prominentWideImage = wideImage && decision.image?.prominent;
+  const hasDiagram = Boolean(decision.diagram);
 
   const heading = (
     <BlockHeading
@@ -88,6 +117,7 @@ export function DecisionBlock({
       <div className="reveal space-y-5">
         {heading}
         {situation}
+        {hasDiagram && <DecisionDiagram decision={decision} />}
         {action}
         {result}
       </div>
@@ -117,6 +147,7 @@ export function DecisionBlock({
         <div className="md:grid md:grid-cols-[minmax(0,1fr)_340px] md:gap-x-[var(--space-4)]">
           <div className="space-y-5 md:col-start-1 md:row-start-1 md:flex md:h-full md:flex-col md:gap-5 md:space-y-0">
             {situation}
+            {hasDiagram && <DecisionDiagram decision={decision} />}
             {narrowAction}
             {result}
           </div>
@@ -142,14 +173,31 @@ export function DecisionBlock({
   return (
     <div className="reveal space-y-5">
       {heading}
-      <div className="space-y-5 md:grid md:grid-cols-[3fr_2fr] md:gap-x-[var(--space-4)] md:gap-y-0 md:space-y-0">
+      <div
+        className={`space-y-5 md:grid md:gap-x-[var(--space-4)] md:gap-y-0 md:space-y-0 ${
+          prominentWideImage ? "md:grid-cols-[11fr_9fr]" : "md:grid-cols-[3fr_2fr]"
+        }`}
+      >
         <div className="md:col-span-2 md:row-start-1 md:mb-5">{situation}</div>
-        <div className="md:col-start-1 md:row-start-2 md:self-start">{action}</div>
-        <figure className="md:col-start-2 md:row-start-2 md:self-center">
-          <Screenshot decision={decision} />
+        {hasDiagram && (
+          <div className="md:col-span-2 md:row-start-2 md:mb-5">
+            <DecisionDiagram decision={decision} />
+          </div>
+        )}
+        <div className={`md:col-start-1 md:self-start ${hasDiagram ? "md:row-start-3" : "md:row-start-2"}`}>
+          {action}
+        </div>
+        <figure
+          className={`relative md:col-start-2 md:self-center ${
+            hasDiagram ? "md:row-start-3" : "md:row-start-2"
+          }`}
+        >
+          <Screenshot decision={decision} captionOutsideAlignment={prominentWideImage} />
         </figure>
         {result && (
-          <div className="md:col-span-2 md:row-start-3 md:mt-5">{result}</div>
+          <div className={`md:col-span-2 md:mt-5 ${hasDiagram ? "md:row-start-4" : "md:row-start-3"}`}>
+            {result}
+          </div>
         )}
       </div>
     </div>

@@ -13,6 +13,12 @@ export interface ProjectImage {
   caption: string;
   /** 세로 폰 목업처럼 폭이 좁은 이미지 — 프레임을 좁게(max-w) 잡고 가운데 정렬한다. */
   narrow?: boolean;
+  /** 판단의 Action 카드와 나란히 둘 때, 이미지 열을 넓히고 카드 시작선에 맞춘다. */
+  prominent?: boolean;
+}
+
+export interface ProjectDiagram {
+  src: string;
 }
 
 export interface SolutionPoint {
@@ -21,6 +27,8 @@ export interface SolutionPoint {
 }
 
 export interface ProjectDecision {
+  /** 흐름 순서가 데이터 배열 순서와 다를 때만 지정한다. */
+  order?: number;
   title: string;
   /** Situation & Task — 마주한 문제 상황 (서술형 문단) */
   problem: string;
@@ -30,6 +38,8 @@ export interface ProjectDecision {
   solution: SolutionPoint[];
   /** Result — 행동으로 만든 결과 (서술형 문단) */
   outcome?: string;
+  /** 이 판단이 담당하는 설계 구간. S&T와 Action 사이 전체 폭으로 표시한다. */
+  diagram?: ProjectDiagram;
   image?: ProjectImage;
 }
 
@@ -55,7 +65,13 @@ export interface Project {
   /** 홈 카드 그리드 전용 썸네일. 없으면 introScreen, 그다음 screens[0]을 쓴다. */
   cardImage?: ProjectImage;
   introScreen?: ProjectImage;
+  /** 개요에서 서비스가 사용자에게 보이는 최종 경험을 소개하는 화면. */
+  showcaseScreen?: ProjectImage;
+  /** showcaseScreen과 나란히 보여줄 사용자 흐름 설명. */
+  showcasePoints?: SolutionPoint[];
   diagramSrc?: string;
+  /** 여러 단계로 나눈 설계 다이어그램. 값이 있으면 diagramSrc보다 우선한다. */
+  diagrams?: ProjectDiagram[];
   diagramCaptions?: SolutionPoint[];
   heroScreen?: ProjectImage;
   decisions: ProjectDecision[];

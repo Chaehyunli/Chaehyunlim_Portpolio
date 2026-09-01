@@ -19,6 +19,14 @@ export function ProjectDetail({ project }: { project: Project }) {
     project.heroScreen && project.diagramCaptions && project.diagramCaptions.length > 0,
   );
   const hasWhy = project.why.length > 0;
+  const diagrams = project.diagrams?.length
+    ? project.diagrams
+    : project.diagramSrc
+      ? [{ src: project.diagramSrc }]
+      : [];
+  const decisions = [...project.decisions].sort(
+    (left, right) => (left.order ?? 0) - (right.order ?? 0),
+  );
 
   return (
     <div className="min-h-screen">
@@ -109,23 +117,41 @@ export function ProjectDetail({ project }: { project: Project }) {
                   </div>
                 )}
 
-                {project.diagramSrc && (
+                {project.showcaseScreen && (
+                  <div className="reveal space-y-4">
+                    <BlockHeading eyebrow="사용 흐름" title="검색 결과를 근거로 답을 받는다" />
+                    {project.showcasePoints && project.showcasePoints.length > 0 ? (
+                      <ImagePointsGrid
+                        image={project.showcaseScreen}
+                        points={project.showcasePoints}
+                        imageFirst={false}
+                      />
+                    ) : (
+                      <div className="max-w-[880px]">
+                        <FramedImage {...project.showcaseScreen} />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {diagrams.length > 0 && (
                   <div className="reveal space-y-4">
                     <BlockHeading eyebrow="설계" title="어떻게 동작하나" />
-                    <figure>
-                      {/* 3칸 × 2줄 파이프라인 — 좁은 화면만 가로 스크롤 */}
-                      <div className="overflow-x-auto rounded-md border border-border shadow-card">
-                        {/* eslint-disable-next-line @next/next/no-img-element -- SVG 다이어그램은 next/image 최적화 대상이 아님 */}
-                        <img
-                          src={project.diagramSrc}
-                          alt={`${project.title} 파이프라인 다이어그램`}
-                          className="block w-full min-w-[680px]"
-                        />
-                      </div>
-                      <figcaption className="mt-[var(--space-1)] font-[family-name:var(--font-mono)] text-xs text-sub">
-                        실선 = 알고리즘·결정론적 처리 · 점선 = LLM 호출
-                      </figcaption>
-                    </figure>
+                    <div className="space-y-4">
+                      {diagrams.map((diagram, index) => (
+                        <figure key={diagram.src}>
+                          {/* 좁은 화면에서만 원본 크기로 가로 스크롤한다. */}
+                          <div className="overflow-x-auto rounded-md border border-border shadow-card">
+                            {/* eslint-disable-next-line @next/next/no-img-element -- SVG 다이어그램은 next/image 최적화 대상이 아님 */}
+                            <img
+                              src={diagram.src}
+                              alt={`${project.title} 파이프라인 다이어그램 ${index + 1}`}
+                              className="block w-full min-w-[680px]"
+                            />
+                          </div>
+                        </figure>
+                      ))}
+                    </div>
                     {hasCaptions && (
                       <ImagePointsGrid
                         image={project.heroScreen!}
@@ -135,7 +161,7 @@ export function ProjectDetail({ project }: { project: Project }) {
                   </div>
                 )}
 
-                {hasCaptions && !project.diagramSrc && (
+                {hasCaptions && diagrams.length === 0 && (
                   <div className="reveal">
                     <ImagePointsGrid
                       image={project.heroScreen!}
@@ -145,11 +171,11 @@ export function ProjectDetail({ project }: { project: Project }) {
                 )}
               </section>
 
-              {project.decisions.length > 0 && (
+              {decisions.length > 0 && (
                 <>
                   <Divider />
                   <section>
-                    {project.decisions.map((decision, index) => (
+                    {decisions.map((decision, index) => (
                       <Fragment key={decision.title}>
                         {index > 0 && <Divider />}
                         <DecisionBlock decision={decision} index={index} />

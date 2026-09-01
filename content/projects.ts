@@ -349,57 +349,93 @@ export const projects: Project[] = [
         detail: "직접 만든 개인 지식 베이스",
       },
     ],
-    diagramSrc: "/images/projects/searchive/diagram-pipeline.svg",
+    introScreen: {
+      src: "/images/projects/searchive/mockup-landing.png",
+      caption: "랜딩 페이지 — 업로드·정리·질의응답을 하나의 흐름으로 안내",
+    },
+    showcaseScreen: {
+      src: "/images/projects/searchive/mockup-rag-qna.png",
+      caption: "RAG 질의응답 — 검색 결과를 근거로 답변을 구성한다",
+    },
+    showcasePoints: [
+      {
+        label: "문서 업로드와 색인",
+        detail: "PDF·텍스트에서 내용을 추출해 검색 가능한 문서로 색인한다.",
+      },
+      {
+        label: "자동 태깅과 대표 태그 재사용",
+        detail: "후보를 정제하고 기존 태그와 연결해 검색 필터를 일관되게 유지한다.",
+      },
+      {
+        label: "검색 결과를 근거로 답변 생성",
+        detail: "찾아낸 문서 정보를 바탕으로 RAG 응답을 구성한다.",
+      },
+    ],
     decisions: [
       {
+        order: 2,
         title: "계산과 통신이 함께 N배로 늘어나는 구조를 배치 검색으로 풀었다",
         problem:
-          "태그 후보 N개를 Elasticsearch에 개별 요청하면 각 요청이 KNN 연산을 수행해 연산과 통신이 동시에 N배로 늘었다.",
+          "문서에서 추출한 태그 후보마다 기존 대표 태그를 찾으려고 Elasticsearch KNN 검색을 개별 요청으로 보냈다. 후보가 늘어날수록 같은 검색 단계에서 KNN 연산과 HTTP 왕복이 함께 N배로 늘어났고, 태그 품질과 무관한 요청 대기 시간이 업로드 흐름의 병목이 됐다.",
+        considerations: [
+          "후보를 하나씩 순차 처리하면 각 검색 결과를 독립적으로 확인하기는 쉽지만, 네트워크 왕복과 검색 실행을 후보 수만큼 반복한다",
+          "캐시만 추가하면 이미 존재하는 동일 요청은 줄일 수 있지만, 처음 들어온 서로 다른 후보들의 검색 팬아웃은 해결하지 못한다",
+          "후보를 하나의 쿼리로 합치면 후보별 유사도 결과가 섞일 수 있어, 검색 단위는 유지하면서 전송만 묶어야 했다",
+        ],
         solution: [
           {
-            label: "Elasticsearch _msearch 배치 요청",
-            detail: "N개 KNN 벡터 쿼리를 요청 1회로 묶음",
+            label: "병목을 검색 계산과 요청 왕복으로 나눠 추적",
+            detail:
+              "순차 처리와 배치 처리의 검색 구간을 따로 측정해, 태그 추출기가 아니라 후보별 KNN 요청과 네트워크 왕복이 지연을 만든다는 점을 확인했다.",
           },
           {
-            label: "순차·배치 처리 구간 분리 측정",
-            detail: "병목 원인을 구간별로 특정 가능",
+            label: "후보별 KNN 쿼리는 유지하고 _msearch로 전송만 묶음",
+            detail:
+              "각 후보가 독립된 유사도 결과를 받아야 하는 검색 의미는 바꾸지 않고, Elasticsearch _msearch에 N개의 KNN 쿼리를 한 요청으로 실어 보냈다.",
           },
           {
-            label: "키워드 5개 기준 5회→1회, 250ms→10ms",
-            detail: "네트워크 왕복·지연 동시 감소",
+            label: "배치 결과를 후보 순서대로 다시 연결",
+            detail:
+              "응답 배열을 원래 후보 순서에 맞춰 복원해, 이후의 완전 일치·벡터 유사도 판단이 개별 요청 방식과 같은 입력을 받도록 구성했다.",
           },
         ],
+        outcome:
+          "키워드 후보 5개 기준 측정에서 Elasticsearch 요청은 5회에서 1회로, 해당 검색 구간은 250ms에서 10ms로 줄었다. 후보별 검색 의미를 유지한 채 통신 대기와 반복 실행을 함께 줄여, 문서 업로드 뒤 태그 정제 단계가 병목이 되지 않게 했다.",
+        diagram: { src: "/images/projects/searchive/diagram-retrieval.svg" },
       },
       {
+        order: 1,
         title: "AI가 뽑은 후보를 그대로 저장하지 않고 과추출+필터+대표 태그 수렴으로 정제했다",
         problem:
-          "추출기가 넘긴 키워드에 불용어·숫자·한 글자짜리가 섞이고, 표기가 다른 같은 의미의 태그가 별개로 생성됐다.",
+          "KeyBERT가 문서에서 뽑은 키워드에는 불용어·숫자·한 글자 토큰이 섞였고, 같은 의미라도 표기가 조금 다르면 별도의 태그로 저장됐다. 후보를 그대로 저장하면 검색 필터가 잡음으로 늘어나고, 시간이 지날수록 하나의 개념이 여러 태그로 흩어졌다.",
+        considerations: [
+          "추출 개수를 목표 태그 수만큼만 제한하면 필터링 뒤 남는 후보가 부족해, 품질 기준을 적용할 여지가 사라진다",
+          "문자열 완전 일치만 쓰면 표기 차이를 흡수하지 못하고, 반대로 유사도만 쓰면 다른 의미를 같은 태그로 합칠 위험이 있다",
+          "매번 새 태그를 생성하면 구현은 단순하지만, 태그 사전이 누적될수록 검색·필터의 일관성이 무너진다",
+        ],
         solution: [
           {
-            label: "목표 개수의 3배 과추출",
-            detail: "품질 필터+표기 정규화·중복 제거 후 상위 3개 선택",
+            label: "목표 개수의 3배를 먼저 뽑고 품질 기준으로 거르기",
+            detail:
+              "초기 후보를 넉넉히 확보한 뒤 불용어·숫자·한 글자 토큰을 제거하고 표기를 정규화했다. 중복을 걷어낸 결과에서 상위 3개만 선택해, 추출 단계의 잡음이 저장 단계까지 이어지지 않게 했다.",
           },
           {
-            label: "이름 완전 일치 → 벡터 유사도 0.8 이상 순 매칭",
-            detail: "기존 태그 우선 재사용, 없을 때만 신규 생성",
+            label: "완전 일치 다음에 벡터 유사도 0.8 이상으로 대표 태그 찾기",
+            detail:
+              "정규화한 이름이 기존 태그와 정확히 같으면 즉시 재사용하고, 없을 때만 벡터 유사도 0.8 이상인 대표 태그에 수렴시켰다. 두 기준을 모두 통과하지 못한 후보만 신규 태그로 만들었다.",
           },
         ],
+        outcome:
+          "태그 저장은 추출기의 출력을 그대로 쌓는 방식에서, 품질 필터와 기존 태그 재사용을 거친 뒤 새 태그를 만드는 방식으로 바뀌었다. 같은 개념의 표기 차이가 검색 필터를 분산시키는 일을 줄이고, 사용자가 화면에서 보는 태그를 더 일관되게 유지했다.",
+        diagram: { src: "/images/projects/searchive/diagram-tagging.svg" },
+        image: {
+          src: "/images/projects/searchive/screen-tagging-result.png",
+          caption: "문서 업로드 뒤 정제된 자동 태깅 결과",
+          prominent: true,
+        },
       },
     ],
-    screens: [
-      {
-        src: "/images/projects/searchive/mockup-landing.png",
-        caption: "랜딩 페이지 — 업로드·정리·질의응답을 한 흐름으로 안내",
-      },
-      {
-        src: "/images/projects/searchive/screen-tagging-result.png",
-        caption: "문서 업로드·자동 태깅 결과",
-      },
-      {
-        src: "/images/projects/searchive/mockup-rag-qna.png",
-        caption: "RAG 질의응답",
-      },
-    ],
+    screens: [],
     result: "개인 지식 베이스 서비스 완성 · 2025.12",
   },
   {
