@@ -592,39 +592,76 @@ export const projects: Project[] = [
     oneLiner:
       "행동 데이터로 펫 감정을 예측하고 미니게임 보상·성장 흐름을 연결한 ML 기반 동물 육성 게임",
     meta: "2025.03 ~ 2025.10 · 팀 프로젝트",
-    scope: "백엔드 도메인 ERD · 감정 예측 모델 · 게임 결과 검증 흐름",
+    scope: "백엔드 도메인 ERD · XGBoost 감정 예측 모델 · 미니게임 웹 전환",
     status: { label: "완성", color: "purple" },
-    badges: ["XGBoost 감정 예측", "합성 데이터 Cold Start"],
+    badges: ["XGBoost 감정 예측", "합성 데이터 Cold Start", "Pygame → React"],
     links: [],
     stack: ["Python", "FastAPI", "XGBoost", "React", "PostgreSQL", "Docker"],
-    why: [],
-    decisions: [
+    why: [
       {
-        title: "Cold Start: 실 데이터 없이 감정 예측 모델을 시작해야 했다",
-        problem: "서비스 초기에는 실제 사용자 행동 로그가 없어 모델 학습이 불가능했다.",
-        solution: [
-          {
-            label: "합성 데이터 10,000건 생성",
-            detail: "행동 패턴 규칙 정의 후 XGBoost 모델 학습",
-          },
-          {
-            label: "R² 0.9964 · RMSE 0.22",
-            detail: "테스트셋 기준, 합성 데이터 기준 수치임을 명시",
-          },
-        ],
+        label: "행동이 상태를 바꾸는 육성 게임",
+        detail: "놀기·밥 주기·선물하기 같은 행동을 펫의 감정과 성장 상태에 연결해야 했다.",
       },
       {
-        title: "Pygame 코드를 React 웹 환경으로 전환한 전략",
-        problem: "초기 미니게임을 Pygame으로 구현했지만 웹 서비스와의 통합이 불가능했다.",
+        label: "서비스 초기의 데이터 부족",
+        detail: "실제 사용자 행동 로그가 없어 감정 예측 모델을 바로 학습할 수 없었다.",
+      },
+      {
+        label: "예측을 실제 상호작용에 연결",
+        detail: "모델 결과를 화면에 표시하는 데서 끝내지 않고 활동·보상·성장 흐름에 반영했다.",
+      },
+    ],
+    cardImage: {
+      src: "/images/projects/nosogong/screen-game-home.png",
+      caption: "감정·친밀도·재화와 상호작용을 한 화면에 담은 펫 육성 게임",
+    },
+    introScreen: {
+      src: "/images/projects/nosogong/screen-game-home.png",
+      caption: "감정·친밀도·재화와 상호작용을 한 화면에 담은 펫 육성 게임",
+      narrow: true,
+    },
+    decisions: [
+      {
+        title: "실사용 로그가 없다고 감정 예측을 포기하는 대신, 행동 규칙을 먼저 데이터로 만들었다",
+        problem:
+          "서비스 초기에는 지도학습에 사용할 실제 사용자 행동 로그가 없었다. 임의의 난수로 데이터를 만들면 행동과 감정 사이의 관계를 학습할 수 없기 때문에, 게임에서 의도한 상태 변화 규칙을 데이터 생성 기준으로 먼저 정의해야 했다.",
         solution: [
           {
-            label: "Pygame → React 재구현",
-            detail: "게임 로직·상태·이벤트를 컴포넌트 구조로 전환",
+            label: "행동과 감정 사이의 규칙을 먼저 정의",
+            detail: "사용자의 행동과 펫 상태가 감정 값에 어떤 방향으로 영향을 주는지 정리하고, 이 규칙을 바탕으로 합성 데이터 10,000건을 생성했다.",
+          },
+          {
+            label: "비선형 관계를 학습할 수 있는 XGBoost 선택",
+            detail: "행동·상태 조합에 따라 달라지는 감정 값을 학습하도록 XGBoost 회귀 모델을 구성하고 테스트셋에서 평가했다.",
+          },
+          {
+            label: "평가 범위를 합성 규칙 재현으로 한정",
+            detail: "합성 데이터 테스트셋에서 R² 0.9964, RMSE 0.22를 확인했다. 실제 사용자 데이터의 일반화 성능이 아니라 정의한 행동 규칙의 재현 결과임을 함께 명시했다.",
+          },
+        ],
+        image: {
+          src: "/images/projects/nosogong/screen-activity-selection.png",
+          caption: "감정 예측의 입력이 되는 산책·공놀이·애견카페 활동 선택",
+          narrow: true,
+        },
+      },
+      {
+        title: "Pygame 코드를 그대로 옮기지 않고 게임 동작의 설계도로 사용했다",
+        problem:
+          "초기 미니게임은 Pygame으로 구현했지만 브라우저 기반 서비스와 직접 통합할 수 없었다. 화면 코드를 그대로 번역하면 게임 로직과 UI 상태가 한 컴포넌트에 뒤섞일 가능성이 컸다.",
+        solution: [
+          {
+            label: "기존 구현에서 게임 규칙을 먼저 분리",
+            detail: "점수 계산, 상태 변화, 입력 이벤트를 Pygame 화면 코드에서 분리해 웹 버전의 동작 기준으로 사용했다.",
+          },
+          {
+            label: "상태와 이벤트를 React 구조로 재구현",
+            detail: "게임 상태를 React에서 관리하고 사용자 입력과 화면 갱신을 컴포넌트 흐름에 맞게 다시 구성했다.",
           },
         ],
       },
     ],
     screens: [],
-    result: "2025.03 ~ 2025.10 완성",
+    result: "합성 데이터 테스트셋 R² 0.9964 · RMSE 0.22(실사용 일반화 성능 아님) · 2025.03 ~ 2025.10 완성",
   },
 ];
