@@ -396,7 +396,7 @@ export const projects: Project[] = [
       "목적·시간·지역·예산·선호를 입력하면 실제 장소 검색 결과로 약속 일정을 만들어주는 AI 서비스",
     meta: "2026.08 ~ · 개인 프로젝트 · 배포 운영 중",
     scope: "기획·설계·구현·배포 전 과정 단독",
-    badges: ["배포 운영 중", "zero-knowledge BYOK", "LLM·알고리즘 경계 설계"],
+    badges: ["배포 운영 중", "클라이언트 암호화 BYOK", "LLM·알고리즘 경계 설계"],
     links: [
       { label: "배포", href: "https://moduyaksok.vercel.app" },
       { label: "GitHub", href: "https://github.com/Chaehyunli/moduyaksok" },
