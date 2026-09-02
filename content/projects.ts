@@ -456,44 +456,91 @@ export const projects: Project[] = [
     ],
     why: [
       {
-        label: "탐색부터 입양까지 단절된 플랫폼",
-        detail: "보호소 실시간 문의까지 한 서비스로 연결 필요",
+        label: "탐색 뒤에 끊기는 입양 경험",
+        detail: "유기견 정보를 찾은 뒤 보호소에 문의하고 입양 절차를 밟는 흐름을 한 서비스 안에서 이어야 했다.",
       },
       {
-        label: "채팅·도메인 핵심 로직 담당",
-        detail: "실시간 프로토콜과 데이터 생명주기 설계 직접 수행",
+        label: "실시간 문의의 신뢰 경계",
+        detail: "HTTP 로그인 상태를 WebSocket과 STOMP 메시지 처리까지 안전하게 이어야 했다.",
+      },
+    ],
+    cardImage: {
+      src: "/images/projects/petner/hero-realtime-chat.png",
+      caption: "유기견 탐색부터 보호소 실시간 문의까지 연결한 PETNER",
+    },
+    introScreen: {
+      src: "/images/projects/petner/screen-dog-detail-adoption.png",
+      caption: "유기견 상세에서 입양 신청과 보호소 채팅으로 이어지는 화면",
+    },
+    showcaseScreen: {
+      src: "/images/projects/petner/screen-adoption-status-management.png",
+      caption: "보호소가 등록한 유기견의 입양 절차 상태를 확인·변경하는 화면",
+    },
+    showcaseEyebrow: "담당 구현",
+    showcaseTitle: "탐색 이후의 입양 흐름을 백엔드로 연결했다",
+    showcasePoints: [
+      {
+        label: "유기견 정보와 입양 신청을 연결",
+        detail: "상세 화면에서 선택한 유기견을 기준으로 신청이 생성되고, 보호소가 해당 요청을 이어서 처리할 수 있게 도메인을 구성했다.",
+      },
+      {
+        label: "보호소 기준의 상태 관리",
+        detail: "보호소가 자신이 등록한 유기견과 현재 입양 절차 상태를 한 화면에서 확인하고 변경할 수 있도록 API를 구현했다.",
+      },
+      {
+        label: "문의가 필요한 순간에는 채팅으로 전환",
+        detail: "유기견 상세에서 보호소와의 실시간 상담으로 진입하도록 입양 신청 흐름과 채팅 도메인을 연결했다.",
       },
     ],
     decisions: [
       {
-        title: "HTTP 세션을 WebSocket 경계 너머까지 이어야 했다",
+        title: "로그인된 사용자라는 사실을 WebSocket 경계에서도 잃지 않아야 했다",
         problem:
-          "REST와 WebSocket은 프로토콜 경계가 달라, HTTP 세션으로 관리되는 로그인 사용자를 WebSocket 핸드셰이크와 STOMP 메시지 처리 단계까지 일관되게 식별해야 했다.",
+          "REST 요청은 HTTP 세션으로 로그인 사용자를 식별하지만, WebSocket은 연결 이후 STOMP 메시지를 별도로 처리한다. 연결만 허용하고 메시지 단계의 사용자 식별을 놓치면 채팅방 권한과 발신자를 신뢰할 수 없었다.",
+        considerations: [
+          "연결 직후의 인증 정보만 믿으면 이후 구독·발행 단계에서 동일 사용자인지 보장할 수 없음",
+          "메시지 본문에 사용자 식별자를 맡기면 클라이언트 값 위변조를 막을 수 없음",
+        ],
+        diagram: {
+          src: "/images/projects/petner/diagram-websocket-auth.svg",
+        },
         solution: [
           {
-            label: "핸드셰이크 시점 Redis 세션 조회",
-            detail: "WebSocket 세션 속성에 주입해 연결부터 메시지 처리까지 동일 컨텍스트 유지",
+            label: "핸드셰이크에서 Redis 세션을 직접 조회",
+            detail: "HTTP 세션에 있는 로그인 사용자 정보를 확인한 뒤, 검증된 식별자만 WebSocket 세션 속성에 주입했다.",
           },
           {
-            label: "단일 HTML 테스트 페이지로 검증",
-            detail: "연결·구독·발행을 단계별로 직접 재현",
+            label: "STOMP 처리 전 구간에 같은 컨텍스트를 사용",
+            detail: "연결·구독·발행이 모두 세션 속성의 사용자 정보를 기준으로 동작하게 하고, 단일 HTML 테스트 페이지로 각 단계를 재현했다.",
           },
         ],
+        outcome:
+          "HTTP 로그인 사용자와 STOMP 메시지 발신자를 같은 세션 컨텍스트로 연결했다. 채팅방의 권한 확인과 발신자 식별을 클라이언트 입력이 아닌 서버가 검증한 세션 정보에 맡겼다.",
       },
       {
-        title: "\"나가기\"는 화면에서 사라지는 것과 데이터를 없애는 것을 분리해야 했다",
+        title: "채팅방에서 나가도 대화 이력까지 사라지면 안 됐다",
         problem:
-          "Hard Delete로 채팅방 나가기를 처리하면 연관 메시지와의 FK 제약 오류와 이력 유실이 발생했다.",
+          "채팅방 나가기를 Hard Delete로 처리하면 메시지와의 FK 제약이 깨지고, 다시 입장했을 때 이전 입양 상담 이력을 이어 볼 수 없었다. 화면에서 사라지는 것과 데이터를 없애는 일은 다른 문제였다.",
+        considerations: [
+          "참여 레코드를 물리 삭제하면 연관 메시지의 무결성과 상담 이력을 함께 잃음",
+          "채팅방 목록에서 숨겨도 재입장 시 과거 메시지를 조회할 수 있어야 함",
+        ],
         solution: [
           {
-            label: "Soft Delete 전환",
-            detail: "삭제를 사용자 관점의 비활성화로 재정의, 조회 시 활성 상태 기준 필터링",
+            label: "삭제를 참여 상태의 비활성화로 재정의",
+            detail: "채팅방을 나간 사용자의 참여 레코드를 지우지 않고 Soft Delete 상태로 전환해, 메시지 관계는 그대로 보존했다.",
           },
           {
-            label: "FK 무결성 + 채팅 이력 보존",
-            detail: "재입장 시 이전 메시지 페이징 조회도 자연스럽게 이어짐",
+            label: "목록과 이력을 서로 다른 기준으로 조회",
+            detail: "채팅방 목록은 활성 참여자만 보이도록 필터링하고, 재입장 시에는 보존된 메시지를 페이징 조회하도록 분리했다.",
           },
         ],
+        outcome:
+          "사용자는 채팅방을 떠난 것처럼 보이지만, 입양 상담 이력과 FK 무결성은 유지된다. 재입장 뒤에도 이전 메시지를 자연스럽게 이어 볼 수 있는 구조가 됐다.",
+        image: {
+          src: "/images/projects/petner/screen-adoption-requests.png",
+          caption: "진행 상태와 함께 유지되는 사용자·보호소의 입양 신청 내역",
+        },
       },
     ],
     screens: [],

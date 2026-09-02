@@ -119,7 +119,10 @@ export function ProjectDetail({ project }: { project: Project }) {
 
                 {project.showcaseScreen && (
                   <div className="reveal space-y-4">
-                    <BlockHeading eyebrow="사용 흐름" title="검색 결과를 근거로 답을 받는다" />
+                    <BlockHeading
+                      eyebrow={project.showcaseEyebrow ?? "사용 흐름"}
+                      title={project.showcaseTitle ?? "검색 결과를 근거로 답을 받는다"}
+                    />
                     {project.showcasePoints && project.showcasePoints.length > 0 ? (
                       <ImagePointsGrid
                         image={project.showcaseScreen}

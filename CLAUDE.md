@@ -34,7 +34,7 @@
 | 채우는 필드 | 나오는 레이아웃 |
 |---|---|
 | `introScreen` + `why[]` | 슬라이드 1 `배경 / 왜 만들었나` — `ImagePointsGrid` |
-| `showcaseScreen` + `showcasePoints[]` | 슬라이드 1 `사용 흐름` — 사용자 흐름 설명과 스크린샷을 2단으로 묶음. points가 없으면 단독 스크린샷 |
+| `showcaseScreen` + `showcasePoints[]` | 슬라이드 1 `사용 흐름` — 사용자 흐름 설명과 스크린샷을 2단으로 묶음. points가 없으면 단독 스크린샷. 프로젝트 맥락에 따라 `showcaseEyebrow`·`showcaseTitle`로 소제목을 지정 |
 | `diagramSrc` (+`heroScreen`+`diagramCaptions[]`) | 슬라이드 1 `설계 / 어떻게 동작하나` — 단일 다이어그램 전체 폭 + 캡션 그리드 |
 | `diagrams[]` | 한 장으로 축소하면 읽기 어려운 흐름을 단계별 다이어그램 여러 장으로 렌더. 값이 있으면 `diagramSrc`보다 우선 |
 | `decisions[].considerations[]` **또는** `.outcome` | 그 판단이 **STAR 모드**(S&T / Action / Result 3단락). 둘 다 없으면 compact(제목 + 문단 + 카드) |
@@ -117,7 +117,7 @@
 
 ## 콘텐츠 데이터
 
-프로젝트 콘텐츠는 `content/projects.ts`의 `Project[]`에서만 관리한다. 컴포넌트에 텍스트를 하드코딩하지 않는다. `introScreen`/`showcaseScreen`/`showcasePoints`/`diagramSrc`/`diagrams`/`diagramCaptions`/`heroScreen`, 그리고 판단별 `order`/`considerations`/`outcome`/`diagram`/`image`는 전부 옵셔널 — 아직 상세 콘텐츠를 안 채운 프로젝트는 카드 정보(`icon`/`title`/`oneLiner`/`meta`/`scope`/`status`/`badges`/`links`/`stack`) + 최소 `decisions`(`title`/`problem`/`solution`) + `result`만으로도 카드와 상세 페이지가 정상 렌더된다. 옵셔널 필드를 채울수록 그 판단이 compact → STAR → 이미지 그리드로 무거워진다 (위 「상세 페이지 = 데이터로 조립」 표 참고).
+프로젝트 콘텐츠는 `content/projects.ts`의 `Project[]`에서만 관리한다. 컴포넌트에 텍스트를 하드코딩하지 않는다. `introScreen`/`showcaseScreen`/`showcasePoints`/`showcaseEyebrow`/`showcaseTitle`/`diagramSrc`/`diagrams`/`diagramCaptions`/`heroScreen`, 그리고 판단별 `order`/`considerations`/`outcome`/`diagram`/`image`는 전부 옵셔널 — 아직 상세 콘텐츠를 안 채운 프로젝트는 카드 정보(`icon`/`title`/`oneLiner`/`meta`/`scope`/`status`/`badges`/`links`/`stack`) + 최소 `decisions`(`title`/`problem`/`solution`) + `result`만으로도 카드와 상세 페이지가 정상 렌더된다. 옵셔널 필드를 채울수록 그 판단이 compact → STAR → 이미지 그리드로 무거워진다 (위 「상세 페이지 = 데이터로 조립」 표 참고).
 
 ## 참고 자산
 

@@ -69,6 +69,10 @@ export interface Project {
   showcaseScreen?: ProjectImage;
   /** showcaseScreen과 나란히 보여줄 사용자 흐름 설명. */
   showcasePoints?: SolutionPoint[];
+  /** 프로젝트 성격에 맞게 사용 흐름 섹션의 짧은 라벨을 바꿀 때 사용한다. */
+  showcaseEyebrow?: string;
+  /** 프로젝트 성격에 맞게 사용 흐름 섹션 제목을 바꿀 때 사용한다. */
+  showcaseTitle?: string;
   diagramSrc?: string;
   /** 여러 단계로 나눈 설계 다이어그램. 값이 있으면 diagramSrc보다 우선한다. */
   diagrams?: ProjectDiagram[];

@@ -1,0 +1,45 @@
+<svg viewBox="0 0 1000 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" font-family="'JetBrains Mono', ui-monospace, monospace">
+  <title id="title">PETNER WebSocket 세션 인증 흐름</title>
+  <desc id="desc">HTTP 세션을 Redis에서 검증하고 WebSocket 세션에 사용자 정보를 전달해 STOMP 구독과 발행에 사용하는 네 단계 흐름이다.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#B0B8C1"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="230" fill="#F2F4F6"/>
+  <text x="32" y="38" font-size="16" font-weight="700" fill="#191F28">HTTP 세션을 STOMP 메시지까지 이어가는 인증 경계</text>
+
+  <g>
+    <rect x="32" y="66" width="208" height="112" rx="12" fill="#FFFFFF" stroke="#E5E8EB" stroke-width="2"/>
+    <text x="52" y="94" font-size="12" font-weight="700" fill="#8B95A1">STEP 1 · HTTP</text>
+    <text x="52" y="126" font-size="16" font-weight="700" fill="#191F28">로그인 세션</text>
+    <text x="52" y="153" font-size="12" fill="#6B7685">세션 ID 쿠키 전달</text>
+  </g>
+  <line x1="242" y1="122" x2="270" y2="122" stroke="#B0B8C1" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="272" y="66" width="208" height="112" rx="12" fill="#FFFFFF" stroke="#E5E8EB" stroke-width="2"/>
+    <text x="292" y="94" font-size="12" font-weight="700" fill="#8B95A1">STEP 2 · HANDSHAKE</text>
+    <text x="292" y="126" font-size="16" font-weight="700" fill="#191F28">Redis 세션 조회</text>
+    <text x="292" y="153" font-size="12" fill="#6B7685">로그인 사용자 검증</text>
+  </g>
+  <line x1="482" y1="122" x2="510" y2="122" stroke="#B0B8C1" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="512" y="66" width="208" height="112" rx="12" fill="#FFFFFF" stroke="#3182F6" stroke-width="2"/>
+    <text x="532" y="94" font-size="12" font-weight="700" fill="#3182F6">STEP 3 · WEBSOCKET</text>
+    <text x="532" y="126" font-size="16" font-weight="700" fill="#191F28">사용자 정보 주입</text>
+    <text x="532" y="153" font-size="12" fill="#6B7685">검증된 식별자만 전달</text>
+  </g>
+  <line x1="722" y1="122" x2="750" y2="122" stroke="#B0B8C1" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="752" y="66" width="216" height="112" rx="12" fill="#FFFFFF" stroke="#3182F6" stroke-width="2"/>
+    <text x="772" y="94" font-size="12" font-weight="700" fill="#3182F6">STEP 4 · STOMP</text>
+    <text x="772" y="126" font-size="16" font-weight="700" fill="#191F28">구독 · 발행 인가</text>
+    <text x="772" y="153" font-size="12" fill="#6B7685">동일 세션 컨텍스트</text>
+  </g>
+
+  <text x="500" y="210" text-anchor="middle" font-size="12" fill="#6B7685">클라이언트가 보낸 사용자 ID 대신 서버가 검증한 세션 정보로 채팅 권한과 발신자를 판단</text>
+</svg>
