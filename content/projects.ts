@@ -465,15 +465,15 @@ export const projects: Project[] = [
       },
     ],
     cardImage: {
-      src: "/images/projects/petner/hero-realtime-chat.png",
+      src: "/images/projects/petner/mockup-realtime-chat.png",
       caption: "유기견 탐색부터 보호소 실시간 문의까지 연결한 PETNER",
     },
     introScreen: {
-      src: "/images/projects/petner/screen-dog-detail-adoption.png",
+      src: "/images/projects/petner/mockup-dog-detail-adoption.png",
       caption: "유기견 상세에서 입양 신청과 보호소 채팅으로 이어지는 화면",
     },
     showcaseScreen: {
-      src: "/images/projects/petner/screen-adoption-status-management.png",
+      src: "/images/projects/petner/mockup-adoption-status-management.png",
       caption: "보호소가 등록한 유기견의 입양 절차 상태를 확인·변경하는 화면",
     },
     showcaseEyebrow: "담당 구현",
@@ -538,7 +538,7 @@ export const projects: Project[] = [
         outcome:
           "사용자는 채팅방을 떠난 것처럼 보이지만, 입양 상담 이력과 FK 무결성은 유지된다. 재입장 뒤에도 이전 메시지를 자연스럽게 이어 볼 수 있는 구조가 됐다.",
         image: {
-          src: "/images/projects/petner/screen-adoption-requests.png",
+          src: "/images/projects/petner/mockup-adoption-requests.png",
           caption: "진행 상태와 함께 유지되는 사용자·보호소의 입양 신청 내역",
         },
       },
@@ -572,11 +572,11 @@ export const projects: Project[] = [
       },
     ],
     cardImage: {
-      src: "/images/projects/dongarimoa/screen-club-explore.png",
+      src: "/images/projects/dongarimoa/mockup-club-explore.png",
       caption: "동아리를 탐색하고 지원하는 메인 화면",
     },
     introScreen: {
-      src: "/images/projects/dongarimoa/screen-club-application.png",
+      src: "/images/projects/dongarimoa/mockup-club-application.png",
       caption: "동아리 탐색 이후 지원서를 작성하는 사용자 흐름",
     },
     decisions: [
@@ -622,7 +622,7 @@ export const projects: Project[] = [
         outcome:
           "동일한 사용자가 동아리마다 독립된 역할을 가질 수 있고, 권한 위임과 구성원 강퇴가 요청 대상 동아리의 권한 범위 안에서만 실행되도록 만들었다.",
         image: {
-          src: "/images/projects/dongarimoa/screen-role-management.png",
+          src: "/images/projects/dongarimoa/mockup-role-management.png",
           caption: "동아리별 역할 위임과 구성원 강퇴를 처리하는 권한 관리 화면",
           prominent: true,
         },
