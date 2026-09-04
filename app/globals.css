@@ -214,12 +214,15 @@
 
     /* 스크린샷이 한 페이지를 통째로 먹지 않도록 높이 제한 (비율 유지) */
     .pf-print img {
-      max-height: 100mm;
+      max-height: 120mm;
       width: auto;
       max-width: 100%;
       margin-inline: auto;
     }
     .pf-print .pf-cover img { max-height: 80mm; }
+    /* 세로 폰 목업은 폭이 좁아 120mm로도 작다 — 조금 더 키운다 */
+    .pf-print .max-w-\[340px\] img,
+    .pf-print [class*="340px"] img { max-height: 150mm; }
     /* 스크린샷 <img>는 Tailwind `w-full`(utilities 레이어)이 위 `width: auto`를 이겨
        width:100% + max-height 클램프가 겹치면 세로만 눌려 찌그러진다.
        overflow-hidden 프레임 안의 스크린샷만 width를 되돌려 비율을 지킨다.

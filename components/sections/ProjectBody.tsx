@@ -129,12 +129,12 @@ export function ProjectBody({ project }: { project: Project }) {
             ))}
           </div>
         )}
-        <div className="reveal flex flex-col gap-2 rounded-md border border-green/25 border-l-[3px] border-l-green bg-green-bg px-5 py-4">
-          <p className="font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-[var(--tracking-wide)] text-green">
-            결과
-          </p>
-          <p className="text-sm leading-relaxed text-text">{project.result}</p>
-        </div>
+        <p className="reveal border-t border-border pt-4 text-sm leading-relaxed text-sub">
+          <span className="mr-2 font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-[var(--tracking-wide)] text-muted">
+            성과
+          </span>
+          {project.result}
+        </p>
       </section>
     </>
   );
