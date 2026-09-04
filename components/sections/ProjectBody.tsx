@@ -129,7 +129,7 @@ export function ProjectBody({ project }: { project: Project }) {
             ))}
           </div>
         )}
-        <div className="reveal flex flex-col gap-2 rounded-md border-l-[3px] border-green bg-green-bg px-5 py-4">
+        <div className="reveal flex flex-col gap-2 rounded-md border border-green/25 border-l-[3px] border-l-green bg-green-bg px-5 py-4">
           <p className="font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-[var(--tracking-wide)] text-green">
             결과
           </p>
