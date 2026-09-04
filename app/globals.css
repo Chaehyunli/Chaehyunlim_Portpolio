@@ -178,44 +178,51 @@
     h2 { font-size: var(--text-xl); }
   }
 
-  /* ---- Résumé (/resume) — 인쇄 우선, 무채색 ---- */
-  .resume {
-    max-width: 760px;
-    margin-inline: auto;
-    padding: 48px 32px 64px;
-    color: #1a1a1a;
-    font-size: 13px;
-    line-height: 1.55;
+  /* ---- 포트폴리오 PDF (/print) ---- */
+  /* /print에는 RevealObserver가 없으므로 reveal을 항상 보이게 강제한다. */
+  .pf-print .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
-  .resume h1 { font-size: 24px; letter-spacing: -0.02em; }
-  .resume h2 {
-    font-size: 11px;
-    font-family: var(--font-mono), monospace;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #555;
-    border-bottom: 1px solid #d1d6db;
-    padding-bottom: 4px;
-    margin-bottom: 10px;
-  }
-  .resume h3 { font-size: 13.5px; font-weight: 700; }
-  .resume p { max-width: none; color: #1a1a1a; }
-  .resume a { color: #1a1a1a; text-decoration: underline; text-underline-offset: 2px; }
-  .resume section { margin-top: 22px; }
-  .resume .r-item { margin-top: 12px; }
-  .resume .r-meta {
-    font-family: var(--font-mono), monospace;
-    font-size: 11px;
-    color: #6b7685;
-  }
+  /* 좁은 폭에서 md: 2단 레이아웃이 안 잡히도록 본문 폭을 A4에 맞춘다. */
+  .pf-print .pf-project > * { max-width: 720px; }
 
   @media print {
-    body { background: #fff; }
+    /* layout.tsx의 body flex 컨텍스트가 페이지 분할을 방해하므로 인쇄에선 해제 */
+    body { background: #fff; display: block; }
     .print\:hidden { display: none !important; }
-    .resume { padding: 0; max-width: none; font-size: 10.5pt; }
-    .resume section { break-inside: avoid; }
-    .resume .r-item { break-inside: avoid; }
-    @page { margin: 14mm; }
+
+    /* 배경색·테두리색을 인쇄에 그대로 (칩·다이어그램·카드) */
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    .pf-print { padding: 0 !important; max-width: none !important; }
+    /* 프로젝트마다 새 페이지에서 시작 — .pf-project에 print:break-before-page 유틸 사용 */
+
+    /* 인쇄에서는 섹션 간격을 줄인다 (화면용 space-y-12 → 과함) */
+    .pf-print .space-y-12 > * + * { margin-top: 1.75rem; }
+    .pf-print .space-y-8 > * + * { margin-top: 1.25rem; }
+
+    /* 스크린샷이 한 페이지를 통째로 먹지 않도록 높이 제한 (비율 유지) */
+    .pf-print img {
+      max-height: 100mm;
+      width: auto;
+      max-width: 100%;
+      margin-inline: auto;
+    }
+    .pf-print .pf-cover img { max-height: 80mm; }
+
+    /* 이미지·다이어그램·캡션 한 세트, 경력 항목이 페이지 경계에서 잘리지 않게 */
+    .pf-print figure,
+    .pf-print .pf-item {
+      break-inside: avoid;
+    }
+    /* 소제목만 페이지 끝에 남지 않게 */
+    .pf-print h2,
+    .pf-print h3 {
+      break-after: avoid;
+    }
+
+    @page { size: A4; margin: 12mm; }
   }
 }

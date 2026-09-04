@@ -104,9 +104,11 @@ export interface Profile {
   name: string;
   title: string;
   oneLiner: string;
+  /** Hero — 한 줄 정의 옆 짧은 태그라인 2~3개(강점 축). */
+  focus: string[];
   /** 홈 About 카드 — 일하는 방식·다음 관심사 불릿 2~3개. */
   about: string[];
-  /** 이력서(/resume) 기술 요약 — 카테고리별 큐레이션. */
+  /** 기술 요약 — 카테고리별 큐레이션. 홈 About 카드 + 포트폴리오 PDF 공용. */
   skills: SkillGroup[];
   email: string;
   links: LinkItem[];

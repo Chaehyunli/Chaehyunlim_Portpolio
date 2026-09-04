@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "pdf": "next build && node scripts/generate-pdf.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
@@ -21,6 +22,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.2",
+    "puppeteer": "^25.10.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

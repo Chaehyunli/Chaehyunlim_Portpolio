@@ -395,3 +395,22 @@ Phase 1~4 전부 적용. `npm run lint` / `tsc --noEmit` / `next build` 통과, 
 - Render keep-alive / ping — 사용자: 안 함. API 문서 링크 콜드스타트(~60초)는 라벨 주석도 안 붙이고 그대로 둠
 - 요약형 이력서(`/resume`) — 포트폴리오 전체 PDF로 대체
 - 팀 프로젝트 1인칭 협업 일화 별도 수집 — 자소서에서 A~E로 확보, 별도 입력 불필요
+
+## 진행 결과 (2026-09-04, v2 완료)
+
+| # | 결과 |
+|---|---|
+| 1 | Hero 2단 — 왼쪽 신원 / 오른쪽 한 줄 정의(text-xl) + `profile.focus` 3칩(`md:self-center`). PDF는 blue 알약 버튼 → `/portfolio.pdf` |
+| 2 | `AboutCard`가 About 불릿(협업 불릿 포함 4개) + Skills 카테고리 그리드를 한 카드에 렌더 |
+| 3 | `ProjectDetail`의 본문을 `ProjectBody`로 추출 → `ProjectDetail`(사이드바)과 `PortfolioPrint`(전체 PDF)가 공유. `/print` = 표지(프로필·About·Skills·경력·학력) + 6개 프로젝트(가로 메타 헤더 + `ProjectBody`) |
+| 4 | `@media print`: body flex 해제(분할 방해), `.pf-project`에 `print:break-before-page` 유틸(layer-base CSS로는 안 먹었음), 이미지 `max-height:100mm`, figure·pf-item `break-inside:avoid`, h2/h3 `break-after:avoid`, `space-y-12/8` 축소. `.pf-print .reveal` 항상 표시 |
+| 5 | `app/resume/` 삭제. Hero → `/portfolio.pdf` |
+| 6 | `scripts/generate-pdf.mjs` + `npm run pdf`(= `next build && node …`). Puppeteer devDep. `public/portfolio.pdf` 커밋. **현재 32쪽 / 11MB** |
+| 7 | Masil 판단 04 "팀이 서로의 구현을 문서만으로 이어받을 수 있게" 추가 (STAR, 이미지 없음) |
+| 8 | `career.ts` 필터 제안 불릿을 "모듈 간 query/body 혼용 발견 → 통일 제안"으로 구체화. `profile.ts` SKALA training 한 줄 확장 |
+
+### 남은 다듬기 (선택)
+
+- [ ] `public/portfolio.pdf` 11MB — 노소공 스크린샷 등 원본 PNG가 큼(1.9MB×2). 이미지 최적화하면 PDF·사이트 로딩 함께 개선 (별도 작업)
+- [ ] `npm run pdf`는 수동 — 콘텐츠 크게 바꾸면 다시 돌리고 커밋
+- [ ] Hero 오른쪽 여백 — 한 줄 정의만 두면 조금 비어 보임. 필요 시 text-2xl 승격 검토
