@@ -25,6 +25,9 @@ export function ProjectCard({ project, delay = 0 }: { project: Project; delay?: 
         )}
       </div>
       <div className="p-5">
+        <p className="mb-1.5 font-[family-name:var(--font-mono)] text-[10px] font-medium tracking-wide text-muted uppercase">
+          {project.meta.split(" · ")[0]}
+        </p>
         <div className="mb-2 flex items-start justify-between gap-2">
           <h3 className="text-base font-bold text-text">{project.title}</h3>
           <Chip color={project.status.color}>{project.status.label}</Chip>

@@ -8,6 +8,22 @@ export interface TimelineEntry {
   desc: string;
 }
 
+export interface CareerEntry {
+  period: string;
+  org: string;
+  role: string;
+  /** 1~2문장, 무엇을 어느 규모에서 맡았는지 */
+  context: string;
+  /** 핵심 기여 2~3불릿 (STAR 내용을 압축) */
+  contributions: string[];
+  stack: string[];
+}
+
+export interface SkillGroup {
+  category: string;
+  items: string[];
+}
+
 export interface ProjectImage {
   src: string;
   caption: string;
@@ -56,9 +72,9 @@ export interface Project {
   title: string;
   oneLiner: string;
   meta: string;
-  scope: string;
+  /** 사이드바 "맡은 역할" — 짧은 역할·모듈 단위 칩으로 렌더된다. */
+  scope: string[];
   status: ProjectStatus;
-  badges: string[];
   links: LinkItem[];
   stack: string[];
   why: SolutionPoint[];
@@ -88,11 +104,13 @@ export interface Profile {
   name: string;
   title: string;
   oneLiner: string;
+  /** 홈 About 카드 — 일하는 방식·다음 관심사 불릿 2~3개. */
+  about: string[];
+  /** 이력서(/resume) 기술 요약 — 카테고리별 큐레이션. */
+  skills: SkillGroup[];
   email: string;
   links: LinkItem[];
   education: TimelineEntry[];
-  experience: TimelineEntry[];
-  projects: TimelineEntry[];
   training: TimelineEntry[];
   certifications: string[];
 }

@@ -12,7 +12,7 @@ import { Divider } from "@/components/ui/Divider";
 import { DecisionBlock } from "@/components/sections/DecisionBlock";
 
 const LABEL_CLASS =
-  "font-[family-name:var(--font-mono)] text-[9px] font-semibold tracking-[var(--tracking-wide)] text-muted uppercase";
+  "text-center font-[family-name:var(--font-mono)] text-[9px] font-semibold tracking-[var(--tracking-wide)] text-muted uppercase";
 
 export function ProjectDetail({ project }: { project: Project }) {
   const hasCaptions = Boolean(
@@ -48,31 +48,31 @@ export function ProjectDetail({ project }: { project: Project }) {
 
       <div className="px-5 py-10 md:px-12 lg:px-20">
         <div className="mx-auto flex max-w-[var(--page-width)] flex-col items-start gap-8 md:flex-row">
-            {/* 사이드바 */}
-            <aside className="w-full shrink-0 space-y-4 md:sticky md:top-20 md:w-52 md:self-start">
+            {/* 사이드바 — 모바일에서는 본문(제목·한 줄 정의) 뒤로 보낸다 */}
+            <aside className="order-2 w-full shrink-0 space-y-4 md:order-1 md:sticky md:top-20 md:w-52 md:self-start">
               <div className="card space-y-4 p-5">
                 <div>
                   <p className={`mb-2 ${LABEL_CLASS}`}>기간·형태</p>
-                  <p className="text-sm text-sub">{project.meta}</p>
+                  <div className="flex flex-wrap justify-center gap-1.5">
+                    {project.meta.split(" · ").map((part) => (
+                      <Chip key={part} color="gray">
+                        {part}
+                      </Chip>
+                    ))}
+                  </div>
                 </div>
                 <div className="border-t border-border pt-3.5">
                   <p className={`mb-2 ${LABEL_CLASS}`}>맡은 역할</p>
-                  <p className="text-sm text-text">{project.scope}</p>
-                </div>
-                {project.badges.length > 0 && (
-                  <div className="border-t border-border pt-3.5">
-                    <p className={`mb-2 text-center ${LABEL_CLASS}`}>Highlights</p>
-                    <div className="flex flex-col items-center gap-1.5">
-                      {project.badges.map((badge) => (
-                        <Chip key={badge} color="blue">
-                          {badge}
-                        </Chip>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap justify-center gap-1.5">
+                    {project.scope.map((role) => (
+                      <Chip key={role} color="gray">
+                        {role}
+                      </Chip>
+                    ))}
                   </div>
-                )}
+                </div>
                 <div className="border-t border-border pt-3.5">
-                  <p className={`mb-2 text-center ${LABEL_CLASS}`}>Tech Stack</p>
+                  <p className={`mb-2 ${LABEL_CLASS}`}>Tech Stack</p>
                   <div className="flex flex-wrap justify-center gap-1.5">
                     {project.stack.map((tech) => (
                       <Tag key={tech}>{tech}</Tag>
@@ -82,7 +82,7 @@ export function ProjectDetail({ project }: { project: Project }) {
                 {project.links.length > 0 && (
                   <div className="border-t border-border pt-3.5">
                     <p className={`mb-2 ${LABEL_CLASS}`}>Links</p>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col items-center gap-2">
                       {project.links.map((link) => (
                         <LinkButton key={link.label} href={link.href}>
                           {link.label}
@@ -95,7 +95,7 @@ export function ProjectDetail({ project }: { project: Project }) {
             </aside>
 
             {/* 본문 — 슬라이드 3장(개요·동작 / 판단 / 서비스 화면)을 Divider로 나눈다 */}
-            <main className="flex min-w-0 flex-1 flex-col">
+            <main className="order-1 flex min-w-0 flex-1 flex-col md:order-2">
               <section className="space-y-12">
                 <div className="reveal">
                   <h2>
@@ -148,7 +148,13 @@ export function ProjectDetail({ project }: { project: Project }) {
                             {/* eslint-disable-next-line @next/next/no-img-element -- SVG 다이어그램은 next/image 최적화 대상이 아님 */}
                             <img
                               src={diagram.src}
-                              alt={`${project.title} 파이프라인 다이어그램 ${index + 1}`}
+                              alt={
+                                project.diagramCaptions?.length
+                                  ? `${project.title} 설계 다이어그램${diagrams.length > 1 ? ` ${index + 1}` : ""}: ${project.diagramCaptions
+                                      .map((c) => c.label)
+                                      .join(" → ")}`
+                                  : `${project.title} 설계 다이어그램${diagrams.length > 1 ? ` ${index + 1}` : ""}`
+                              }
                               className="block w-full min-w-[680px]"
                             />
                           </div>

@@ -1,6 +1,9 @@
 import { profile } from "@/content/profile";
 import { projects } from "@/content/projects";
+import { career } from "@/content/career";
 import { HeroCard } from "@/components/sections/HeroCard";
+import { AboutCard } from "@/components/sections/AboutCard";
+import { CareerCard } from "@/components/sections/CareerCard";
 import { TimelineCard } from "@/components/sections/TimelineCard";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { RevealObserver } from "@/components/RevealObserver";
@@ -13,6 +16,8 @@ export default function Home() {
         <section className="px-5 pt-14 pb-10 md:px-12 lg:px-20">
           <div className="mx-auto max-w-[var(--page-width)] space-y-5">
             <HeroCard profile={profile} />
+            <AboutCard profile={profile} />
+            <CareerCard career={career} />
             <TimelineCard profile={profile} />
           </div>
         </section>

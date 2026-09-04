@@ -7,8 +7,8 @@
   --color-bg: #f2f4f6;
   --color-card: #ffffff;
   --color-text: #191f28;
-  --color-sub: #8b95a1;
-  --color-muted: #b0b8c1;
+  --color-sub: #6b7685;
+  --color-muted: #8b95a1;
   --color-border: #e5e8eb;
   --color-border-strong: #d1d6db;
 
@@ -176,5 +176,46 @@
     .section { padding-block: var(--space-6); }
     h1 { font-size: var(--text-2xl); }
     h2 { font-size: var(--text-xl); }
+  }
+
+  /* ---- Résumé (/resume) — 인쇄 우선, 무채색 ---- */
+  .resume {
+    max-width: 760px;
+    margin-inline: auto;
+    padding: 48px 32px 64px;
+    color: #1a1a1a;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .resume h1 { font-size: 24px; letter-spacing: -0.02em; }
+  .resume h2 {
+    font-size: 11px;
+    font-family: var(--font-mono), monospace;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #555;
+    border-bottom: 1px solid #d1d6db;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+  }
+  .resume h3 { font-size: 13.5px; font-weight: 700; }
+  .resume p { max-width: none; color: #1a1a1a; }
+  .resume a { color: #1a1a1a; text-decoration: underline; text-underline-offset: 2px; }
+  .resume section { margin-top: 22px; }
+  .resume .r-item { margin-top: 12px; }
+  .resume .r-meta {
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    color: #6b7685;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .print\:hidden { display: none !important; }
+    .resume { padding: 0; max-width: none; font-size: 10.5pt; }
+    .resume section { break-inside: avoid; }
+    .resume .r-item { break-inside: avoid; }
+    @page { margin: 14mm; }
   }
 }

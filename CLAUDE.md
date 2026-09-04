@@ -20,7 +20,7 @@
 
 - 홈(`app/page.tsx`)은 카드형 랜딩: 프로필 히어로 카드 + 학력·경력 카드 + 프로젝트 카드 그리드(`ProjectCard`, `content/projects.ts` 순서 그대로).
 - 프로젝트마다 별도 라우트 `app/[projectId]/page.tsx` (동적 세그먼트, `generateStaticParams`로 6개 프로젝트 정적 생성). 카드를 클릭하면 해당 프로젝트 상세 페이지로 이동 — 단일 스크롤로 되돌리지 않는다.
-- 상세 페이지(`ProjectDetail`)는 **모두약속을 표준 템플릿**으로 삼는다. 상단 고정 바(← 목록 blue pill + 상태 칩) + 왼쪽 sticky 사이드바(기간·역할·하이라이트·스택·링크) + 오른쪽 본문 2단. 본문은 **슬라이드 3장**을 `Divider`로 나눈다:
+- 상세 페이지(`ProjectDetail`)는 **모두약속을 표준 템플릿**으로 삼는다. 상단 고정 바(← 목록 blue pill + 상태 칩) + 왼쪽 sticky 사이드바(기간·형태 / 맡은 역할 / 스택 / 링크 — 모두 가운데 정렬 칩. `meta`·`scope`는 ` · ` 분해해 gray `Chip`, 스택은 mono `Tag`) + 오른쪽 본문 2단. 본문은 **슬라이드 3장**을 `Divider`로 나눈다:
   1. **개요·동작** — 제목·한 줄 정의 → `배경 / 왜 만들었나`(`introScreen` + `why`) → `설계 / 어떻게 동작하나`(`diagramSrc` 다이어그램 + `heroScreen` + `diagramCaptions`)
   2. **판단** — `판단 01/02/…` 카드(`DecisionBlock`). 판단 **사이에도** `Divider`를 넣는다.
   3. **서비스 화면·결과** — `screens` 2열 그리드 + `result` 마무리 띠
@@ -117,7 +117,7 @@
 
 ## 콘텐츠 데이터
 
-프로젝트 콘텐츠는 `content/projects.ts`의 `Project[]`에서만 관리한다. 컴포넌트에 텍스트를 하드코딩하지 않는다. `introScreen`/`showcaseScreen`/`showcasePoints`/`showcaseEyebrow`/`showcaseTitle`/`diagramSrc`/`diagrams`/`diagramCaptions`/`heroScreen`, 그리고 판단별 `order`/`considerations`/`outcome`/`diagram`/`image`는 전부 옵셔널 — 아직 상세 콘텐츠를 안 채운 프로젝트는 카드 정보(`icon`/`title`/`oneLiner`/`meta`/`scope`/`status`/`badges`/`links`/`stack`) + 최소 `decisions`(`title`/`problem`/`solution`) + `result`만으로도 카드와 상세 페이지가 정상 렌더된다. 옵셔널 필드를 채울수록 그 판단이 compact → STAR → 이미지 그리드로 무거워진다 (위 「상세 페이지 = 데이터로 조립」 표 참고).
+프로젝트 콘텐츠는 `content/projects.ts`의 `Project[]`에서만 관리한다(경력/인턴은 같은 구조를 `content/career.ts`의 `CareerEntry[]`로 두고 홈 About 아래 `CareerCard` 한 장으로만 렌더 — 상세 라우트 없음). 컴포넌트에 텍스트를 하드코딩하지 않는다. `introScreen`/`showcaseScreen`/`showcasePoints`/`showcaseEyebrow`/`showcaseTitle`/`diagramSrc`/`diagrams`/`diagramCaptions`/`heroScreen`, 그리고 판단별 `order`/`considerations`/`outcome`/`diagram`/`image`는 전부 옵셔널 — 아직 상세 콘텐츠를 안 채운 프로젝트는 카드 정보(`icon`/`title`/`oneLiner`/`meta`/`scope`(`string[]`)/`status`/`links`/`stack`) + 최소 `decisions`(`title`/`problem`/`solution`) + `result`만으로도 카드와 상세 페이지가 정상 렌더된다. 옵셔널 필드를 채울수록 그 판단이 compact → STAR → 이미지 그리드로 무거워진다 (위 「상세 페이지 = 데이터로 조립」 표 참고).
 
 ## 참고 자산
 

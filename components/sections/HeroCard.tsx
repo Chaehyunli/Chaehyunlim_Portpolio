@@ -23,6 +23,7 @@ export function HeroCard({ profile }: { profile: Profile }) {
               {link.label}
             </LinkButton>
           ))}
+          <LinkButton href="/resume">이력서</LinkButton>
         </div>
       </div>
     </div>

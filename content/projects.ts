@@ -7,10 +7,9 @@ export const projects: Project[] = [
     title: "모두약속",
     oneLiner:
       "목적·시간·지역·예산·선호를 입력하면 실제 장소 검색 결과로 약속 일정을 만들어주는 AI 서비스",
-    meta: "2026.08 ~ · 개인 프로젝트 · 배포 운영 중",
-    scope: "기획·설계·구현·배포 전 과정 단독",
+    meta: "2026.08 ~ · 개인 프로젝트",
+    scope: ["기획·설계", "구현", "배포·운영"],
     status: { label: "배포 운영 중", color: "green" },
-    badges: ["배포 운영 중", "클라이언트 암호화 BYOK", "LLM·알고리즘 경계 설계"],
     links: [
       { label: "배포", href: "https://moduyaksok.vercel.app" },
       { label: "GitHub", href: "https://github.com/Chaehyunli/moduyaksok" },
@@ -173,7 +172,7 @@ export const projects: Project[] = [
     ],
     screens: [],
     result:
-      "공개 배포 · 본인·지인 사용 중(사용량 분석 미도입) · 초기 생성 지연 p50 16초 / p95 ~20초(로컬 5회) · https://moduyaksok.vercel.app",
+      "공개 배포 후 본인·지인이 사용 중. 일정 1건이 네이버 지역검색 21회로 팬아웃되는 구조라 초기 생성은 로컬 5회 기준 p50 16초 / p95 ~20초이며, Step 4를 사용자 선택 이후로 미뤄 호출 비용을 줄였다. 후보는 실제 검색 결과 안에서만 구성한다. https://moduyaksok.vercel.app",
   },
   {
     id: "masil",
@@ -181,10 +180,22 @@ export const projects: Project[] = [
     title: "Masil",
     oneLiner: "대화로 일정을 짜고 예약까지 이어지는 AI agent 여행 플래너",
     meta: "2026.03 ~ 2026.08 · 4인 팀",
-    scope: "AI 파이프라인 설계 단독 · AI 서버 구현 80% / 백엔드 API 전체 설계 · 일정 도메인 구현",
+    scope: [
+      "AI 파이프라인 설계 단독",
+      "AI 서버 구현 80%",
+      "구간별 DeepEval 검증",
+      "백엔드 API 설계",
+      "일정 도메인 구현",
+      "R2DBC 비동기 전환",
+    ],
     status: { label: "앱 배포 완료", color: "green" },
-    badges: ["Capstone 은상", "Android 앱 배포", "구간별 LLM 검증"],
-    links: [{ label: "GitHub", href: "https://github.com/orgs/Masil2026/repositories" }],
+    links: [
+      { label: "GitHub", href: "https://github.com/orgs/Masil2026/repositories" },
+      {
+        label: "담당 PR",
+        href: "https://github.com/search?q=org%3AMasil2026+author%3AChaehyunli+is%3Apr&type=pullrequests",
+      },
+    ],
     stack: [
       "React Native", "Expo", "Spring WebFlux", "FastAPI", "PydanticAI",
       "PostgreSQL", "Redis", "SSE", "Docker Compose",
@@ -325,9 +336,8 @@ export const projects: Project[] = [
     title: "Searchive",
     oneLiner: "문서를 업로드하면 자동 태깅·검색·RAG 질의응답으로 이어지는 개인 지식 베이스",
     meta: "2025.10 ~ 2025.12 · 개인 프로젝트",
-    scope: "기획·설계·구현 전 과정 단독",
+    scope: ["기획·설계", "태그 파이프라인 구현", "검색·RAG 구현"],
     status: { label: "완성", color: "gray" },
-    badges: ["개인 프로젝트", "벡터 기반 태그 재사용", "Elasticsearch 배치 검색"],
     links: [
       { label: "GitHub", href: "https://github.com/orgs/Searchive-Project/repositories" },
     ],
@@ -443,12 +453,21 @@ export const projects: Project[] = [
     icon: "🐾",
     title: "PETNER",
     oneLiner: "유기견 탐색·입양 신청·커뮤니티·보호소 실시간 채팅을 연결한 팀 백엔드 서비스",
-    meta: "2025.08 ~ 2025.10 · 팀 프로젝트 · 장려상",
-    scope: "채팅·유기견·입양 신청·즐겨찾기 도메인 백엔드",
+    meta: "2025.08 ~ 2025.10 · 팀 프로젝트",
+    scope: [
+      "실시간 채팅 도메인",
+      "WebSocket/STOMP 세션 인증",
+      "유기견 도메인",
+      "입양 신청 도메인",
+      "즐겨찾기 도메인",
+    ],
     status: { label: "장려상", color: "orange" },
-    badges: ["WebSocket/STOMP 세션 인증", "Soft Delete 설계", "장려상"],
     links: [
       { label: "GitHub", href: "https://github.com/orgs/Dangdaengdan/repositories" },
+      {
+        label: "담당 PR",
+        href: "https://github.com/search?q=org%3ADangdaengdan+author%3AChaehyunli+is%3Apr&type=pullrequests",
+      },
     ],
     stack: [
       "Java 17", "Spring Boot", "Spring Security", "JPA", "PostgreSQL",
@@ -552,10 +571,14 @@ export const projects: Project[] = [
     title: "동아리모아",
     oneLiner: "동아리 탐색·지원·운영·권한 위임을 한 서비스에서 다룬 팀 백엔드 프로젝트",
     meta: "2025.01 ~ 2025.03 · 팀 프로젝트",
-    scope: "핵심 도메인 설계 · 인증 방식 선택 · 동아리별 RBAC · 지원·승인 흐름 구현",
+    scope: [
+      "핵심 도메인 설계",
+      "Redis 세션 인증 선택",
+      "리소스 단위 RBAC",
+      "지원·승인 흐름 구현",
+    ],
     status: { label: "완성", color: "gray" },
-    badges: ["Redis 세션 인증", "리소스 단위 RBAC"],
-    links: [],
+    links: [{ label: "GitHub", href: "https://github.com/Chaehyunli/TeamProject2025" }],
     stack: ["Java", "Spring Boot", "Spring Security", "JPA", "MySQL", "Redis"],
     why: [
       {
@@ -633,15 +656,25 @@ export const projects: Project[] = [
   },
   {
     id: "nosogong",
-    icon: "📎",
+    icon: "🎮",
     title: "노소공",
     oneLiner:
       "행동 데이터로 펫 감정을 예측하고 미니게임 보상·성장 흐름을 연결한 ML 기반 동물 육성 게임",
     meta: "2025.03 ~ 2025.10 · 팀 프로젝트",
-    scope: "백엔드 도메인 ERD · XGBoost 감정 예측 모델 · 미니게임 웹 전환",
+    scope: [
+      "백엔드 도메인 ERD",
+      "XGBoost 감정 예측 모델",
+      "합성 데이터 생성 규칙",
+      "Pygame → React 전환",
+    ],
     status: { label: "완성", color: "purple" },
-    badges: ["XGBoost 감정 예측", "합성 데이터 Cold Start", "Pygame → React"],
-    links: [],
+    links: [
+      { label: "GitHub", href: "https://github.com/orgs/no-so-gong/repositories" },
+      {
+        label: "담당 PR",
+        href: "https://github.com/search?q=org%3Ano-so-gong+author%3AChaehyunli+is%3Apr&type=pullrequests",
+      },
+    ],
     stack: ["Python", "FastAPI", "XGBoost", "React", "PostgreSQL", "Docker"],
     why: [
       {
@@ -658,8 +691,8 @@ export const projects: Project[] = [
       },
     ],
     cardImage: {
-      src: "/images/projects/nosogong/screen-game-home.png",
-      caption: "감정·친밀도·재화와 상호작용을 한 화면에 담은 펫 육성 게임",
+      src: "/images/projects/nosogong/screen-activity-selection.png",
+      caption: "산책·공놀이·애견카페 활동 선택 — 감정 예측의 입력",
     },
     introScreen: {
       src: "/images/projects/nosogong/screen-game-home.png",
@@ -716,6 +749,7 @@ export const projects: Project[] = [
       },
     ],
     screens: [],
-    result: "합성 데이터 테스트셋 R² 0.9964 · RMSE 0.22(실사용 일반화 성능 아님) · 2025.03 ~ 2025.10 완성",
+    result:
+      "Cold Start를 규칙 기반 합성 데이터로 풀어 감정 예측 모델과 후속 게임 흐름을 함께 검증했다. 정의한 행동 규칙을 모델이 재현하는지 본 수치는 합성 테스트셋 R² 0.9964 / RMSE 0.22이며, 실사용 일반화 성능은 아니다. 2025.03 ~ 2025.10 완성",
   },
 ];
