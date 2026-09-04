@@ -25,7 +25,7 @@
 - 상세 페이지(`ProjectDetail`)는 **모두약속을 표준 템플릿**으로 삼는다. 상단 고정 바(← 목록 blue pill + 상태 칩) + 왼쪽 sticky 사이드바(기간·형태 / 맡은 역할 / 스택 / 링크 — 모두 가운데 정렬 칩. `meta`·`scope`는 ` · ` 분해해 gray `Chip`, 스택은 mono `Tag`) + 오른쪽 본문(`ProjectBody`). 본문은 **슬라이드 3장**을 `Divider`로 나눈다:
   1. **개요·동작** — 제목·한 줄 정의 → `배경 / 왜 만들었나`(`introScreen` + `why`) → `설계 / 어떻게 동작하나`(`diagramSrc` 다이어그램 + `heroScreen` + `diagramCaptions`)
   2. **판단** — `판단 01/02/…` 카드(`DecisionBlock`). 판단 **사이에도** `Divider`를 넣는다.
-  3. **서비스 화면·결과** — `screens` 2열 그리드 + `result` 마무리 띠
+  3. **서비스 화면·결과** — `screens` 2열 그리드 + `result` 성과 한 줄
 - 슬라이드·판단 소제목은 전부 `BlockHeading`(모노 블루 eyebrow + 굵은 h3) 하나로 통일한다.
 - 오른쪽 고정 목차 내비게이션은 다중 페이지 구조와 맞지 않아 제거했다 — 페이지 이동은 카드 클릭 + 상세 페이지 상단의 "← 목록" 링크로 처리한다.
 
