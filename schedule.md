@@ -358,6 +358,40 @@ Phase 1~4 전부 적용. `npm run lint` / `tsc --noEmit` / `next build` 통과, 
 
 ## 아직 사용자 입력 필요
 
-- [ ] 팀 프로젝트 1인칭 협업 일화 2개 (이견→해결 / 코드리뷰 / 언블록 중) — 협업 평가가 제일 낮은 축(C+). 내가 못 씀
 - [ ] 동아리모아 "담당 커밋" 링크 붙일지 (커밋에 프론트 작업 섞여 있어 scope의 백엔드 주장과 온도차 가능 — 직접 확인 권장)
-- [ ] Render 헬스체크 ping 주기 확인 (14분 이하로)
+
+---
+
+# 다음 작업 계획 v2 (2026-09-04 확정, 진행 중)
+
+> 자소서(HERMES/취업/[2026-2] 자소서)에서 협업 경험을 뽑아, 별도 "협업" 섹션 없이 기존 STAR·About·경력에 녹인다. 이력서형 `/resume`는 폐기하고 포트폴리오 전체 PDF로 전환. 홈 상단(Hero+About)을 재구성해 Skills를 첫 화면에 올린다.
+
+## 협업 경험 리스트 (자소서 출처)
+
+| 경험 | 반영 방식 |
+|---|---|
+| **A. Masil 문서화 컨벤션** | Masil에 STAR 판단 1개 추가. S&T: 4인 팀 초반 각자 영역만 앎 / Action: 트러블슈팅·기술선정 근거를 노션에 기록하는 컨벤션 도입, 주 1회 브리핑 / Result: 팀원이 문서만으로 AI 파이프라인 마무리를 이어받음. **"손목 골절" 표현은 안 씀** |
+| **B. AgentPass(SKALA) 계약 우선 병렬개발** | 새 프로젝트 X. About 협업 불릿 + SKALA training 한 줄로. **Kafka 언급 안 함**(직접 구현 X) |
+| **C. 프람트 인턴 필터 파라미터 통일 제안** | `career.ts` 기여 불릿 구체화 — "모듈 간 query/response body 혼용 발견 → query 파라미터 통일 제안" |
+| **D. 검증 공백 혼자 메움 (약점)** | 포폴에 안 넣음. 자소서 전용 |
+| **E. PETNER OpenSearch 라이선스 비교** | 이미 반영. 추가 X |
+
+## 작업 순서
+
+| # | 작업 | 파일 |
+|---|---|---|
+| 1 | **Hero 2단 재구성** — 왼쪽 신원 / 오른쪽에 한 줄 정의 크게 + 짧은 태그라인 2~3개(`profile.focus`), PDF는 버튼화 | `HeroCard`, `content/profile.ts`, `content/types.ts` |
+| 2 | **About + Skills 통합 카드** — `AboutCard`가 `profile.skills`도 렌더(카테고리 그리드). About에 협업 불릿(B) 추가 | `AboutCard`, `content/profile.ts`, `app/page.tsx` |
+| 3 | **`/print` 라우트** — 프로필·About·Skills·경력·6개 프로젝트 상세 전체를 세로로 렌더. `PortfolioPrint` 컴포넌트가 기존 하위 컴포넌트 재사용. sticky바·reveal·사이드바 제거(가로 메타로 평탄화) | `app/print/`, `components/sections/PortfolioPrint.tsx` |
+| 4 | **`@media print` 페이지 나눔** — `@page A4`, `print-color-adjust:exact`, 프로젝트마다 `break-before:page`, 판단·이미지+캡션·다이어그램·result에 `break-inside:avoid`, BlockHeading `break-after:avoid`, 2단→세로 스택 | `app/globals.css` |
+| 5 | **`/resume` 제거** + Hero 링크를 `/print` 기반 PDF로 교체 | `app/resume/` 삭제, `HeroCard` |
+| 6 | **`scripts/generate-pdf.mjs` + `npm run pdf`** — Puppeteer(devDep)로 `/print` 렌더 → `public/portfolio.pdf`. 수동 실행. 빌드타임 자동화는 안 함 | `scripts/`, `package.json`, `public/` |
+| 7 | **Masil STAR 판단 추가**(A) | `content/projects.ts` |
+| 8 | **`career.ts` 필터 제안 구체화**(C) + **SKALA training 한 줄 확장**(B) | `content/career.ts`, `content/profile.ts` |
+| 9 | schedule.md 최종 갱신 | `schedule.md` |
+
+## 폐기된 항목
+
+- Render keep-alive / ping — 사용자: 안 함. API 문서 링크 콜드스타트(~60초)는 라벨 주석도 안 붙이고 그대로 둠
+- 요약형 이력서(`/resume`) — 포트폴리오 전체 PDF로 대체
+- 팀 프로젝트 1인칭 협업 일화 별도 수집 — 자소서에서 A~E로 확보, 별도 입력 불필요
