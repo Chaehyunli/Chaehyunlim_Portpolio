@@ -6,11 +6,14 @@
 // 렌더해 인쇄한다. 콘텐츠를 크게 바꿨을 때 다시 돌리고 public/portfolio.pdf 를 커밋한다.
 
 import { spawn } from "node:child_process";
+import { createRequire } from "node:module";
 import { setTimeout as sleep } from "node:timers/promises";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import puppeteer from "puppeteer";
+
+const require = createRequire(import.meta.url);
 
 const PORT = 4399;
 const URL = `http://localhost:${PORT}/print`;
@@ -29,7 +32,9 @@ async function waitForServer(url, tries = 60) {
   throw new Error(`서버가 ${url} 에서 응답하지 않음`);
 }
 
-const server = spawn("npx", ["next", "start", "-p", String(PORT)], {
+// next 바이너리를 node로 직접 실행 — Node 24부터 spawn("npx")는 Windows에서 ENOENT.
+const nextBin = require.resolve("next/dist/bin/next");
+const server = spawn(process.execPath, [nextBin, "start", "-p", String(PORT)], {
   stdio: "ignore",
   env: process.env,
 });

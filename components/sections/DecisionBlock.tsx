@@ -143,13 +143,13 @@ export function DecisionBlock({
     return (
       <div className="reveal space-y-5">
         {heading}
-        {/* 캡션은 row 2로 빼서 높이 기준에서 제외 — Result 밑변이 이미지 하단(캡션 X)에 닿는다 */}
-        <div className="md:grid md:grid-cols-[minmax(0,1fr)_340px] md:gap-x-[var(--space-4)]">
+        {/* 스택(모바일·인쇄) 순서: S&T → 설계 → Action → 이미지 → Result.
+           md에서는 명시 col/row로 배치 — 폰은 오른쪽, Result는 왼쪽 컬럼 아래 전체 폭. */}
+        <div className="md:grid md:grid-cols-[minmax(0,1fr)_340px] md:grid-rows-[1fr_auto] md:gap-x-[var(--space-4)]">
           <div className="space-y-5 md:col-start-1 md:row-start-1 md:flex md:h-full md:flex-col md:gap-5 md:space-y-0">
             {situation}
             {hasDiagram && <DecisionDiagram decision={decision} />}
             {narrowAction}
-            {result}
           </div>
           <figure className="md:contents">
             <div className="mt-5 overflow-hidden rounded-md shadow-card md:col-start-2 md:row-start-1 md:mt-0 md:self-center">
@@ -164,6 +164,7 @@ export function DecisionBlock({
               {decision.image.caption}
             </figcaption>
           </figure>
+          {result && <div className="mt-5 md:col-start-1 md:row-start-2 md:mt-5">{result}</div>}
         </div>
       </div>
     );

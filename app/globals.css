@@ -94,6 +94,11 @@
     font-weight: var(--weight-regular);
     line-height: var(--leading-normal);
     -webkit-font-smoothing: antialiased;
+    /* 한글은 기본값(어느 음절에서나 줄바꿈)이라 '동작'이 '동/작'으로 끊긴다.
+       띄어쓰기(어절) 단위로만 줄바꿈하도록 전역 고정 — 토스식.
+       overflow-wrap: 긴 영문 토큰(URL 등)이 좁은 칸을 넘칠 때만 강제로 끊는다. */
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 
   img, svg { display: block; max-width: 100%; }
@@ -199,6 +204,10 @@
     .pf-print { padding: 0 !important; max-width: none !important; }
     /* 프로젝트마다 새 페이지에서 시작 — .pf-project에 print:break-before-page 유틸 사용 */
 
+    /* PDF는 A4 폭(≈794px)이 md 브레이크포인트(768px)보다 넓어 md: 2단이 그대로 켜진다.
+       본문은 720px로 좁혀놨으니 2단이 찌그러진다 — 인쇄에서는 전부 세로 스택으로 되돌린다. */
+    .pf-print [class*="md:grid"] { display: block !important; }
+
     /* 인쇄에서는 섹션 간격을 줄인다 (화면용 space-y-12 → 과함) */
     .pf-print .space-y-12 > * + * { margin-top: 1.75rem; }
     .pf-print .space-y-8 > * + * { margin-top: 1.25rem; }
@@ -211,6 +220,11 @@
       margin-inline: auto;
     }
     .pf-print .pf-cover img { max-height: 80mm; }
+    /* 스크린샷 <img>는 Tailwind `w-full`(utilities 레이어)이 위 `width: auto`를 이겨
+       width:100% + max-height 클램프가 겹치면 세로만 눌려 찌그러진다.
+       overflow-hidden 프레임 안의 스크린샷만 width를 되돌려 비율을 지킨다.
+       (다이어그램은 overflow-x-auto 안이라 영향 없음 — 전체 폭 유지) */
+    .pf-print .overflow-hidden > img { width: auto !important; }
 
     /* 이미지·다이어그램·캡션 한 세트, 경력 항목이 페이지 경계에서 잘리지 않게 */
     .pf-print figure,
